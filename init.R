@@ -77,6 +77,9 @@ german_states$area <- c(
 )
 
 # Geolocation of all stations
+## filter out outlier
+stations_geo_loc <- stations_geo_loc[!stations_geo_loc$bahnhof_index %in% c(4651,654,1937,2794,2807,3080,184,4851,559,3622,2703,2305,3494,3160,3084), ]
+
 ggplot() + 
   geom_sf(data = german_states) +
   geom_point(stations_geo_loc[stations_geo_loc$lon > 0, ], mapping = aes(x = lon, y = lat))
