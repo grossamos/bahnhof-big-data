@@ -1,0 +1,24 @@
+---
+title: "Bahnhof"
+author: "Eddie und Amos"
+format: html
+editor: visual
+---
+
+## Fragestellung
+
+## Laden der Daten
+
+## Geographische Analyse
+
+### Transformieren/Bearbeiten
+
+### Visualisierung
+
+## Normale Diagramme
+
+<!-- Stadt Land -->
+
+<!-- Ost West -->
+
+## Fazit

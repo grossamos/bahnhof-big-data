@@ -2,25 +2,28 @@ library(tidyverse)
 library(ggmap)
 library(broom)
 library(sf)
+library(cowplot)
 
 ############################
 # Loading + Cleansing Data #
 ############################
 
-bahnhof <- read_delim("./data/bahnhof.csv", delim = ";")
-sapply(bahnhof, function(x) (sum(is.na(x))))
+# plz als char um start mit 0 besser zu erkennen
+bahnhof <- read_delim("./data/bahnhof.csv", delim = ";", col_types = "cccdccdcccc")
+sapply(german_plz_weighted, function(x) (sum(is.na(x))))
 
 # Feldkirchener Straße
 length(unique(bahnhof$`Bf. Nr.`)) == nrow(bahnhof)
-bahnhof[bahnhof$`Bf. Nr.` == "8268", c("PLZ", "Ort")] <- list(60549, "Frankfurt")
-bahnhof[bahnhof$`Bf. Nr.` == "8353", c("Straße", "PLZ", "Ort")] <- list("Vareler Straße", 26349, "Jaderberg")
-bahnhof[bahnhof$`Bf. Nr.` == "8256", c("Straße", "PLZ", "Ort")] <- list("Oberaustraße", 83026, "Rosenheim")
-bahnhof[bahnhof$`Bf. Nr.` == "8298", c("Straße", "PLZ", "Ort")] <- list("Schlosswald 20z", 09114, "Chemnitz")
-bahnhof[bahnhof$`Bf. Nr.` == "8276", c("Straße", "PLZ", "Ort")] <- list("Mockauer Straße 123", 04357, "Leipzig")
-bahnhof[bahnhof$`Bf. Nr.` == "8233", c("Straße", "PLZ", "Ort")] <- list("Am Stadtrand", 06406, "Bernburg")
-bahnhof[bahnhof$`Bf. Nr.` == "8288", c("Straße", "PLZ", "Ort", "Bf DS 100Abk.")] <- list("Mühlenweg 4", 48734, "Reken", "EREK")
+bahnhof[bahnhof$`Bf. Nr.` == "8268", c("PLZ", "Ort")] <- list("60549", "Frankfurt")
+bahnhof[bahnhof$`Bf. Nr.` == "8353", c("Straße", "PLZ", "Ort")] <- list("Vareler Straße", "26349", "Jaderberg")
+bahnhof[bahnhof$`Bf. Nr.` == "8256", c("Straße", "PLZ", "Ort")] <- list("Oberaustraße", "83026", "Rosenheim")
+bahnhof[bahnhof$`Bf. Nr.` == "8298", c("Straße", "PLZ", "Ort")] <- list("Schlosswald 20z", "09114", "Chemnitz")
+bahnhof[bahnhof$`Bf. Nr.` == "8276", c("Straße", "PLZ", "Ort")] <- list("Mockauer Straße 123", "04357", "Leipzig")
+bahnhof[bahnhof$`Bf. Nr.` == "8233", c("Straße", "PLZ", "Ort")] <- list("Am Stadtrand", "06406", "Bernburg")
+bahnhof[bahnhof$`Bf. Nr.` == "8288", c("Straße", "PLZ", "Ort", "Bf DS 100Abk.")] <- list("Mühlenweg 4", "48734", "Reken", "EREK")
 bahnhof[bahnhof$`Bf. Nr.` == "8314", "Straße"] <- "Zweibrückenstraße 13"
 bahnhof[bahnhof$`Bf. Nr.` == "5827", "Straße"] <- "Feldkirchener Straße"
+bahnhof$PLZ[nchar(bahnhof$PLZ) == 4] <- paste("0", bahnhof$PLZ[nchar(bahnhof$PLZ) == 4], sep = "")
 
 bahnhof # Datentypen ergeben sinn
 
@@ -54,6 +57,25 @@ german_states$population <- c(
   2108863
 )
 
+german_states$area <- c(
+  35747.83,
+  70541.57,
+  891.12,
+  29654.43,
+  419.37,
+  755.09,
+  21115.64,
+  23295.22,
+  47709.80,
+  34112.44,
+  19858,
+  2571.11,
+  18449.93,
+  20456.51,
+  15800.54,
+  16202.35
+)
+
 # Geolocation of all stations
 ggplot() + 
   geom_sf(data = german_states) +
@@ -67,43 +89,54 @@ german_states_weighted <- left_join(
 )
 
 # Heatmap of station density
-ggplot() + 
-  geom_sf(data = german_states_weighted, aes(fill = n/population))
+p1 <- ggplot() + 
+  geom_sf(data = german_states_weighted, aes(fill = population/n))
+
+p2 <- ggplot() + 
+  geom_sf(data = german_states_weighted, aes(fill = (population/area)))
+
+p3 <- ggplot() + 
+  geom_sf(data = german_states_weighted, aes(fill = n/area))
+
+plot_grid(p2, p3, p1)
 
 german_plz <- st_read("./data/german_plz")
 
-bahnhof %>%
-  count(PLZ) 
-
 german_plz_weighted <- left_join(
-  german_plz %>%
-    mutate_at(vars(plz), as.double),
+  german_plz,
   bahnhof %>%
     count(PLZ) %>%
     replace_na(list(n = 0)),
   by = c("plz" = "PLZ")
 )
 
-bahnhof %>%
-  select(PLZ, Bundesland)
-  count(PLZ) 
-
 german_plz_weighted <- german_plz_weighted %>%
   mutate(
-    ratio = n/einwohner
+    ratio1 = einwohner/n,
+    ratio2 = einwohner/qkm,
+    ratio3 = n/qkm,
   )
 
 # obersten 2 sind flughäfen
-german_plz_weighted %>% arrange(desc(ratio))
+german_plz_weighted %>% arrange(desc(ratio1))
 
 # wir sehen wesentlich breiteren ausbau im osten (mehr plz haben bahnhöfe)
-ggplot() +
-  geom_sf(data = german_plz_weighted, aes(fill = ratio)) 
+p1 <- ggplot() +
+  geom_sf(data = german_plz_weighted, aes(fill = ratio1), linewidth = 0.01) 
+
+p2 <- ggplot() +
+  geom_sf(data = german_plz_weighted, aes(fill = ratio2), linewidth = 0.01) 
+
+p3 <- ggplot() +
+  geom_sf(data = german_plz_weighted, aes(fill = ratio3), linewidth = 0.01) 
+
+plot_grid(p2, p3, p1)
 
 # aber potentielle probleme: plz sind größer und es gibt pro fläche weniger einwohner
 
 # plz größe ost vs west 
 
+p2
 
 bahnhof %>%
   filter(grepl("Bahnhof", Straße)) %>%
