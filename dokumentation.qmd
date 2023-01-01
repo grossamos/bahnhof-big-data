@@ -7,6 +7,11 @@ editor: visual
 
 ## Fragestellung
 
+### Datenquellen
+
+<!-- https://www.deutschebahn.com/pr-hamburg-de/DB-im-Norden-1/Regionale-Themen/Bahnhoefe-der-Deutschen-Bahn-6121238 -->
+<!-- ->haben alle bahnhöfe in de (sind 5400) -->
+
 ## Laden der Daten
 
 ## Geographische Analyse
