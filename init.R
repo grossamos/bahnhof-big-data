@@ -88,18 +88,30 @@ german_states_weighted <- left_join(
   by = c("name_1" = "Bundesland")
 )
 
+
 # Heatmap of station density
-p1 <- ggplot() + 
-  geom_sf(data = german_states_weighted, aes(fill = population/n))
+p1 <- ggplot(data = german_states_weighted) + 
+  geom_sf(
+    aes(fill = population/n)
+  ) +
+  theme(legend.position = "bottom")
 
-p2 <- ggplot() + 
-  geom_sf(data = german_states_weighted, aes(fill = (population/area)))
+p2 <- ggplot(data = german_states_weighted) + 
+  geom_sf(
+    aes(fill = population/area)
+  ) +
+  theme(legend.position = "bottom")
 
-p3 <- ggplot() + 
-  geom_sf(data = german_states_weighted, aes(fill = n/area))
+p3 <- ggplot(data = german_states_weighted) + 
+  geom_sf(
+    aes(fill = n/area)
+  ) +
+  theme(legend.position = "bottom")
 
-plot_grid(p2, p3, p1)
+plot_grid(p2, p3, p1, nrow = 1)
 
+
+# mehr granulatität durch postleitzahlen
 german_plz <- st_read("./data/german_plz")
 
 german_plz_weighted <- left_join(
@@ -115,22 +127,36 @@ german_plz_weighted <- german_plz_weighted %>%
     ratio1 = einwohner/n,
     ratio2 = einwohner/qkm,
     ratio3 = n/qkm,
-  )
+  ) %>%
+  replace_na(list(n = 0, ratio1 = 0, ratio2 = 0, ratio3 = 0))
 
-# obersten 2 sind flughäfen
-german_plz_weighted %>% arrange(desc(ratio1))
+# TODO (obersten 2 sind flughäfen)
+# german_plz_weighted %>% arrange((ratio2))
 
 # wir sehen wesentlich breiteren ausbau im osten (mehr plz haben bahnhöfe)
-p1 <- ggplot() +
-  geom_sf(data = german_plz_weighted, aes(fill = ratio1), linewidth = 0.01) 
+p1 <- ggplot(data = german_plz_weighted) +
+  geom_sf(
+    aes(fill = ratio1), 
+    linewidth = 0.01
+  ) +
+  theme(legend.position = "bottom")
 
-p2 <- ggplot() +
-  geom_sf(data = german_plz_weighted, aes(fill = ratio2), linewidth = 0.01) 
+p2 <- ggplot(data = german_plz_weighted) +
+  geom_sf(
+    aes(fill = ratio2), 
+    linewidth = 0.00001
+  ) +
+  scale_fill_gradient(name = "Bevölkerungsdichte", trans = "log") +
+  theme(legend.position = "bottom")
 
-p3 <- ggplot() +
-  geom_sf(data = german_plz_weighted, aes(fill = ratio3), linewidth = 0.01) 
+p3 <- ggplot(data = german_plz_weighted) +
+  geom_sf(
+    aes(fill = ratio3), 
+    linewidth = 0.01
+  ) +
+  theme(legend.position = "bottom")
 
-plot_grid(p2, p3, p1)
+plot_grid(p2, p3, p1, nrow = 1)
 
 # aber potentielle probleme: plz sind größer und es gibt pro fläche weniger einwohner
 
