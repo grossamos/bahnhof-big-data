@@ -66,8 +66,7 @@ stations_geo_loc <- read_csv("data/locations.csv")
 # filter stations which google maps couldn't find
 stations_geo_loc <- stations_geo_loc[!is.na(stations_geo_loc$lon), ]
 
-# Geolocation of all stations
-## filter out outlier
+# filter out outlier (outside of Germany)
 stations_geo_loc <- stations_geo_loc[!stations_geo_loc$bahnhof_index %in% c(4651,654,1937,2794,2807,3080,184,4851,559,3622,2703,2305,3494,3160,3084), ]
 
 ```
@@ -122,11 +121,19 @@ german_states$area <- c(
 
 ## Geographische Analyse
 
+
 Alle Bahnhöfe als Punkte auf einer Karte:
+
+todo: 
+* Aufgabenträger je Bahnhof (pointcloud)
+* karte mit farbe je kategorie
 ```{r}
 ggplot() + 
   geom_sf(data = german_states) +
-  geom_point(stations_geo_loc[stations_geo_loc$lon > 0, ], mapping = aes(x = lon, y = lat))
+  geom_point(
+    stations_geo_loc[stations_geo_loc$lon > 0, ], 
+    mapping = aes(x = lon, y = lat)
+  )
 ```
 
 Vergleich auf Bundesländerebene:
@@ -160,6 +167,9 @@ p3 <- ggplot(data = german_states_weighted) +
 
 plot_grid(p2, p3, p1, nrow = 1)
 ```
+
+### erste 2 ziffern plz (todo)
+
 
 ### Mehr Granularität durch Postleitzahlen:
 
@@ -225,14 +235,6 @@ plot_grid(p2, p3, p1, nrow = 1)
 
 ## Normale Diagramme
 
-### Fun fact
-
-dieser Prozentsatz an Bahnhöfen ist in einer Bahnhofstraße, Bahnhofallee, etc.
-```{r}
-bahnhof %>%
-  filter(grepl("Bahnhof", Straße)) %>%
-  count(.) / nrow(bahnhof)
-```
 
 ### Boxplot 
 im vergleich zu oben
@@ -245,6 +247,21 @@ ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
 #   geom_violin(aes(x = n, y = einwohner, fill = n, group = n))
 ```
 
+
+### Fun fact
+
+dieser Prozentsatz an Bahnhöfen ist in einer Bahnhofstraße, Bahnhofallee, etc.
+```{r}
+bahnhof %>%
+  filter(grepl("Bahnhof", Straße)) %>%
+  count(.) / nrow(bahnhof)
+```
+
+todo: 
+* top 10 städte nach anzahl bahnhöfe (barchart) (zusätzlich aufteilung in kategorien)
+
+
+
 <!-- Stadt Land -->
 
 <!-- Ost West -->
@@ -255,3 +272,7 @@ Erkenntnisse aus Daten:
 * Viele Lücken in Bahnhofskarte
 * (Bahnhofmenge korreliert leicht mit Einwohneranzahl)
 * ....
+
+
+## Quellen
+
