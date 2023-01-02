@@ -14,6 +14,24 @@
 Fun facts:
 - Wie viele Bahnhöfe sind in der Bahnhofstraße
 
+## Vorgehen
+- Maps Nutzen um Auffälligkeiten zu finden
+  1. Stadt und Land ist unterschiedlich
+  2. Bahnhofshäufigkeit in Ost und West ist unterschiedlich -> einfach wegen größeren PLZ -> spiegelt sich aber auch in nationaler karte wieder...?
+  3. Abdeckung bei Ländergrenzen: am besten bei Polen > Luxemburg, Frankreich, Österreich, Schweiz > Belgien, Dänemark > Czechien
+  4. Bahnhofsdichte entspricht so ca. Bevölkerungsdichte
+- Analysen auf Auffälligkeiten
+  1. Stadt/Land
+  2. Ost/West
+    - Prozentsatz der Ortschaften mit bahnhöfen sortiert nach Bevölkerungszahl der Plz (in quantilen, über 3k, über 100, über 100k...)
+  3. Ländergrenzen
+    - 
+  - Städte/Land im vergleich (dichte über/unter schwellenwert pro einwohner)
+  - Länder im Vergleich
+- Allgemeine Analysen
+  - wie sind bevölkerung und bahnhofsdichte korreliert
+- Störgründe für trends bedenken:
+  - bspw. Abwanderung aus dem Osten 
 
 
 ## Datensätze

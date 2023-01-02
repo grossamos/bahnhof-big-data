@@ -10,7 +10,7 @@ library(cowplot)
 
 # plz als char um start mit 0 besser zu erkennen
 bahnhof <- read_delim("./data/bahnhof.csv", delim = ";", col_types = "cccdccdcccc")
-sapply(german_plz_weighted, function(x) (sum(is.na(x))))
+sapply(bahnhof, function(x) (sum(is.na(x))))
 
 # Feldkirchener Straße
 length(unique(bahnhof$`Bf. Nr.`)) == nrow(bahnhof)
@@ -142,12 +142,13 @@ p1 <- ggplot(data = german_plz_weighted) +
     aes(fill = ratio1), 
     linewidth = 0.01
   ) +
+  scale_fill_gradient(name = "Bevölkerung pro Bahnhof", trans = "log") +
   theme(legend.position = "bottom")
 
 p2 <- ggplot(data = german_plz_weighted) +
   geom_sf(
     aes(fill = ratio2), 
-    linewidth = 0.00001
+    linewidth = 0.01
   ) +
   scale_fill_gradient(name = "Bevölkerungsdichte", trans = "log") +
   theme(legend.position = "bottom")
@@ -157,17 +158,21 @@ p3 <- ggplot(data = german_plz_weighted) +
     aes(fill = ratio3), 
     linewidth = 0.01
   ) +
+  scale_fill_gradient(name = "Bahnhofsdichte", trans = "log") +
   theme(legend.position = "bottom")
 
 plot_grid(p2, p3, p1, nrow = 1)
 
-# aber potentielle probleme: plz sind größer und es gibt pro fläche weniger einwohner
-
-# plz größe ost vs west 
-
 p2
 
+# Bahnhofsstraßenfilter
 bahnhof %>%
   filter(grepl("Bahnhof", Straße)) %>%
   count(.) / nrow(bahnhof)
+
+ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
+  geom_boxplot(aes(x = n, y = einwohner, fill = n, group = n))
+
+ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
+  geom_violin(aes(x = n, y = einwohner, fill = n, group = n))
 
