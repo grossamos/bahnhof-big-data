@@ -2,3 +2,5 @@
 .Rproj.user/
 .RData
 .Rhistory
+dokumentation_files/*
+dokumentation.html
