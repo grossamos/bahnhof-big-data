@@ -19,8 +19,6 @@ format:
 
 ## Laden der Daten
 
-
-
 Import der Bibliotheken:
 ```{r}
 #| warning: false
@@ -50,6 +48,9 @@ bahnhof[bahnhof$`Bf. Nr.` == "8314", "Straße"] <- "Zweibrückenstraße 13"
 bahnhof[bahnhof$`Bf. Nr.` == "5827", "Straße"] <- "Feldkirchener Straße"
 bahnhof$PLZ[nchar(bahnhof$PLZ) == 4] <- paste("0", bahnhof$PLZ[nchar(bahnhof$PLZ) == 4], sep = "")
 
+bahnhof <- bahnhof %>%
+  mutate_at(vars(`Kat. Vst`), factor)
+
 ```
 
 ### locations.csv Daten laden
@@ -62,12 +63,15 @@ geocode() verwendet um aus Adressen Geokoordinaten zu erhalten
 # locations <- geocode(paste(bahnhof$Straße, bahnhof$Ort, sep = " "))
 # write_csv(locations, "data/locations.csv")
 
-stations_geo_loc <- read_csv("data/locations.csv")
-# filter stations which google maps couldn't find
-stations_geo_loc <- stations_geo_loc[!is.na(stations_geo_loc$lon), ]
+stations_geo_loc <- read_csv("data/locations.csv", show_col_types = FALSE)
 
-# filter out outlier (outside of Germany)
+# filter out invalid locations (outside of Germany) and trainstations gmaps couldn't find
 stations_geo_loc <- stations_geo_loc[!stations_geo_loc$bahnhof_index %in% c(4651,654,1937,2794,2807,3080,184,4851,559,3622,2703,2305,3494,3160,3084), ]
+previous_len <- nrow(stations_geo_loc)
+stations_geo_loc <- stations_geo_loc %>%
+  filter(!is.na(lat) & !is.na(lon) & lon > 0)
+ nrow(stations_geo_loc) / previous_len # we have presumably correct geolocations of 98% of the provided rows
+stations_geo_loc <- left_join(stations_geo_loc, rowid_to_column(bahnhof, "bahnhof_index"), by = c("bahnhof_index" = "bahnhof_index"))
 
 ```
 
@@ -131,9 +135,27 @@ todo:
 ggplot() + 
   geom_sf(data = german_states) +
   geom_point(
-    stations_geo_loc[stations_geo_loc$lon > 0, ], 
-    mapping = aes(x = lon, y = lat)
-  )
+    stations_geo_loc, 
+    mapping = aes(x = lon, y = lat, color = Aufgabenträger),
+    size = 0.1,
+    show.legend = F
+  ) 
+ggplot() + 
+  geom_sf(data = german_states) +
+  geom_point(
+    stations_geo_loc, 
+    mapping = aes(x = lon, y = lat, color = `Kat. Vst`),
+    size = 0.1,
+  ) +
+  scale_color_manual(values = c(
+    "black", # Fernbahnof (Hbf)
+    "blue", # Hbf größerer Städte
+    "green", # Hbf kleiner/mittleren städten
+    "yellow", # regionalbahnhof
+    "red", # stadtteilbahnhof
+    "orange", # landbahnof
+    "pink" # ultra landbahnhof
+  ))
 ```
 
 Vergleich auf Bundesländerebene:
