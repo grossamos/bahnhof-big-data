@@ -304,6 +304,7 @@ ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
 
 
 ### Fun fact
+Folgende Erkenntnisse passen nicht ganz zur Fragestellung, sind aber dennoch interessant.
 
 dieser Prozentsatz an Bahnhöfen ist in einer Bahnhofstraße, Bahnhofallee, etc.
 ```{r}
@@ -314,6 +315,12 @@ bahnhof %>%
 
 todo: 
 * top 10 städte nach anzahl bahnhöfe (barchart) (zusätzlich aufteilung in kategorien)
+
+```{r}
+
+
+
+```
 
 
 
@@ -331,3 +338,7 @@ Erkenntnisse aus Daten:
 
 ## Quellen
 
+- Bevölkerungsdaten: https://www.suche-postleitzahl.org/downloads
+- Stationsdaten: https://data.deutschebahn.com/dataset/data-stationsdaten.html
+- Shapefiles: https://geodata.lib.utexas.edu/catalog/stanford-nh891yz3147
+- Bahnhofsanzahl Deutschland: https://www.deutschebahn.com/pr-hamburg-de/DB-im-Norden-1/Regionale-Themen/Bahnhoefe-der-Deutschen-Bahn-6121238
