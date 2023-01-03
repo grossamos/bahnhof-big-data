@@ -306,30 +306,38 @@ ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
 ### Fun fact
 Folgende Erkenntnisse passen nicht ganz zur Fragestellung, sind aber dennoch interessant.
 
-dieser Prozentsatz an Bahnhöfen ist in einer Bahnhofstraße, Bahnhofallee, etc.
+
+#### Prozentsatz an Bahnhöfen mit "Bahnhof" in Adresse
 ```{r}
 bahnhof %>%
   filter(grepl("Bahnhof", Straße)) %>%
   count(.) / nrow(bahnhof)
 ```
 
+#### Top 10 Städte nach Bahnhofanzahl
 todo: 
 * top 10 städte nach anzahl bahnhöfe (barchart) (zusätzlich aufteilung in kategorien)
 
 ```{r}
 t = (table(bahnhof$Ort))
-
 t.order = as.data.frame(t[order(t, decreasing = T)])
-t.order[1:10,]
 
-# t[1]
-# length(t)
-# t
-# 
-ggplot(data=t.order[1:10,]) +
+t.order
+t.order[1:10,]$Var1
+filter(bahnhof, Ort %in% t.order[1:10,]$Var1)
+
+str(bahnhof)
+
+top10 = filter(bahnhof, Ort %in% t.order[1:10,]$Var1)
+top10.order = ordered(top10, levels = t.order[1:10,]$Var1)
+top10.order
+
+# TODO order
+
+ggplot(data=top10) +
   geom_bar(
-    aes(x=Var1, y=Freq),
-    stat="identity"
+    aes(x=Ort, fill=`Kat. Vst`),
+    #stat="identity"
   ) + 
   theme(
     axis.title.x = element_blank(),
@@ -337,7 +345,8 @@ ggplot(data=t.order[1:10,]) +
   ) + 
   labs(
     y = "Anzahl Bahnhöfe",
-    title = "Top 10 Städte nach Bahnhöfen"
+    title = "Top 10 Städte nach Bahnhöfen",
+    fill = "Bahnhofskategorie"
   )
 
 
