@@ -353,6 +353,7 @@ ggplot(data=top10) +
 ```
 
 
+#### eventuel?: gleiches barchart aber mit bundesländern
 
 <!-- Stadt Land -->
 
