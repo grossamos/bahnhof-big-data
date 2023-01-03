@@ -317,7 +317,28 @@ todo:
 * top 10 städte nach anzahl bahnhöfe (barchart) (zusätzlich aufteilung in kategorien)
 
 ```{r}
+t = (table(bahnhof$Ort))
 
+t.order = as.data.frame(t[order(t, decreasing = T)])
+t.order[1:10,]
+
+# t[1]
+# length(t)
+# t
+# 
+ggplot(data=t.order[1:10,]) +
+  geom_bar(
+    aes(x=Var1, y=Freq),
+    stat="identity"
+  ) + 
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(angle = -20, hjust = 0)
+  ) + 
+  labs(
+    y = "Anzahl Bahnhöfe",
+    title = "Top 10 Städte nach Bahnhöfen"
+  )
 
 
 ```
