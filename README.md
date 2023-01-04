@@ -7,12 +7,14 @@
 - Dort wo die höchste Einwohnerdichte ist gibt es die meisten Bahnhöfe (bspw. Stadt mehr als Land) und erwartung ist, dass sich dieses Verhältnis nicht zwischen Bundesländern unterscheidet (bspw. gleiches ratio von Einwohnerdichte zu Bahnhofsanzahl)
 
 ## Gaphen oder analysen die wir machen können
-- Bundesland die bahnhofsdichte/bevölkerungsdichte
-- Heatmap Bahnhöfe und Heatmap Bevölkerungsdichte
-- Korrelationsgraphern (ahnhofsdichte zu bevölkerungsdichte)
+- wie viele personen haben einen Bahnhof in ihrer Plz
+- wie groß ist die durchschnittliche postleitzahl (evtl. auch vgl osten westen)
+- in eddies vergleich große der Stadt miteinbeziehen
+- Auftraggeber und Verkehrsbund vergleichen (einfach nochmal einen Graphen zu verkehrsbund machen)
 
 Fun facts:
 - Wie viele Bahnhöfe sind in der Bahnhofstraße
+- Größe der Postleitzahlen ~ bevölkerungsdichte/bevölkerung
 
 ## Vorgehen
 - Maps Nutzen um Auffälligkeiten zu finden
