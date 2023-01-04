@@ -17,6 +17,8 @@ Wenn man anschließend den Bus verpasst, der dort 2 mal die Woche fährt, hinter
 Einflussfaktoren bedingen sich unteranderem historisch, politisch (bspw. durch die Privatisierung der Bahn in 1994) oder durch wirtschaftlichen oder sozialen Druck (bspw. Bevölkerungswachstum in einer Stadt).
 Unter diesem Hintergrund stellt sich die Frage, inwiefern Bahnhöfe trotz der vielen Einflussfaktoren fair verteilt sind.
 
+## Datenquellen
+
 Um diese Frage zu beantworten wir ein Datensatz der Deutschen Bahn mit allen deutschen Bahnstationen analysiert[^1].
 Der Datensatz enthält Address, Verkehrsbund und Verwaltungsdaten für die Bahnstationen.
 Zusätzlich wird ein Datensatz mit Bevölkerungs-, Bundesland- und Postleitzahldaten[^2] [^3] ergänzt um einen späteren Abgleich möglich zu machen.
@@ -26,7 +28,8 @@ Intuitiv wird erwartet, dass der Datensatz die ungleiche Verteilung zwischen Bah
 [^2]: Schwochow Softwareentwicklung, "Postleitzahl mit Einwohnerzahl", <https://www.suche-postleitzahl.org/downloads>, 14.02.2022
 [^3]: Hijmans, Robert J., University of California, Berkeley. Museum of Vertebrate Zoology. "First-level Administrative Divisions, Germany, 2015",  <https://geodata.lib.utexas.edu/catalog/stanford-nh891yz3147>, 2015
 
-## Laden der Daten
+
+### Laden der Daten
 
 ```{r}
 #| output: false
@@ -39,7 +42,7 @@ library(sf)
 library(cowplot)
 ```
 
-### Stationsdatens
+#### Stationsdatensatz
 
 ```{r}
 #| output: false
@@ -82,7 +85,7 @@ Allgemein lässt sich aussagen, dass der Datensatz mit `r nrow(bahnhof)` Station
 [^4]: Deutsche Bahn, "bahnhof.de", <https://www.bahnhof.de/>, 2022
 [^5]: Deutsche Bahn, "Integrierter Bericht 2021", 2022
 
-### Geographische Daten
+#### Geographische Daten
 
 ```{r}
 #| output: false
@@ -132,7 +135,7 @@ german_states$area <- c(
 )
 ```
 
-Für die Kartenanalysen dieser Arbeit werden shapefiles verwendet.
+Für die Kartenanalysen dieser Arbeit werden Polygonaldaten in Form von Shapefiles verwendet.
 Miteinbezogen wird ein Datensatz mit Bundesländern [^3] und einer mit allen Postleitzahlen [^2].
 Der Postleitzahldatensatz enthält Populations- und Flächendaten (`einwohner`, `qkm`).
 Der Bundesländerdatensatz wird manuel um diese Daten ergänzt [^6].
@@ -209,11 +212,6 @@ In karte erkennbar:
 * Stationen folgen Bahnlinien zwischen städten -> evtl. ungerecht, da eine ortschaft wahrscheinlicher einen Bahnhof bekommst wenn sie auf einer bahnstrecke zwischen strecken liegt
 * In Bayern große Stationsfreie flächen, im norden, vorallem im osten besser ausgeweitet/verteilt
 * Viele Stationen an der Französischen grenze
-
-<!-- ### Kartenmaterial inclusive Einwohner und Fläche -->
-
-
-
 
 <!-- ## Geographische Analyse -->
 
@@ -406,6 +404,62 @@ In karte erkennbar:
 <!-- * (Bahnhofmenge korreliert leicht mit Einwohneranzahl) -->
 <!-- * .... -->
 
+### Fun fact
+Folgende Erkenntnisse passen nicht ganz zur Fragestellung, sind aber dennoch interessant.
+
+
+#### Prozentsatz an Bahnhöfen mit "Bahnhof" in Adresse
+```{r}
+bahnhof %>%
+  filter(grepl("Bahnhof", Straße)) %>%
+  count(.) / nrow(bahnhof)
+```
+
+#### Top 10 Städte nach Bahnhofanzahl
+todo: 
+* top 10 städte nach anzahl bahnhöfe (barchart) (zusätzlich aufteilung in kategorien)
+
+```{r}
+t = (table(bahnhof$Ort))
+t.order = as.data.frame(t[order(t, decreasing = T)])
+
+t.order
+t.order[1:10,]$Var1
+filter(bahnhof, Ort %in% t.order[1:10,]$Var1)
+
+str(bahnhof)
+
+top10 = filter(bahnhof, Ort %in% t.order[1:10,]$Var1)
+top10.order = ordered(top10, levels = t.order[1:10,]$Var1)
+top10.order
+
+# TODO order
+
+ggplot(data=top10) +
+  geom_bar(
+    aes(x=Ort, fill=`Kat. Vst`),
+    #stat="identity"
+  ) + 
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(angle = -20, hjust = 0)
+  ) + 
+  labs(
+    y = "Anzahl Bahnhöfe",
+    title = "Top 10 Städte nach Bahnhöfen",
+    fill = "Bahnhofskategorie"
+  )
+
+
+```
+
+
+#### eventuel?: gleiches barchart aber mit bundesländern
+
 
 <!-- ## Quellen -->
 
+- Bevölkerungsdaten: https://www.suche-postleitzahl.org/downloads
+- Stationsdaten: https://data.deutschebahn.com/dataset/data-stationsdaten.html
+- Shapefiles: https://geodata.lib.utexas.edu/catalog/stanford-nh891yz3147
+- Bahnhofsanzahl Deutschland: https://www.deutschebahn.com/pr-hamburg-de/DB-im-Norden-1/Regionale-Themen/Bahnhoefe-der-Deutschen-Bahn-6121238
