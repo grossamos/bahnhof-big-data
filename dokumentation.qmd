@@ -407,33 +407,26 @@ german_states_weighted <- left_join(
 heatmap_theme <- bahn_map_theme +
   theme(legend.position = "bottom", legend.title=element_blank())
 
-population_per_train_theme <- scale_fill_gradient(trans = "log", labels = c(0.0001, 0.00005), breaks = c(0.0001, 0.00005)) 
-
-# Heatmap of station density
-population_per_train <- ggplot(data = german_states_weighted) +
-  geom_sf(
-    aes(fill = n/population)
-  ) +
-  heatmap_theme +
-  population_per_train_theme
-
-population_density_theme <- scale_fill_gradient(trans = "log", labels = c(150, 500, 2000), breaks = c(150, 500, 2000))
-
 population_density <- ggplot(data = german_states_weighted) +
   geom_sf(
     aes(fill = population/area)
   ) +
   heatmap_theme +
-  population_density_theme
-
-train_density_theme <- scale_fill_gradient(trans = "log", labels = c(0.01, 0.02, 0.5, 0.1), breaks = c(0.01, 0.02, 0.05, 0.1))
+  scale_fill_gradient(trans = "log", labels = c(150, 500, 2000), breaks = c(150, 500, 2000))
 
 train_density <- ggplot(data = german_states_weighted) +
   geom_sf(
     aes(fill = n/area)
   ) +
   heatmap_theme +
-  train_density_theme
+  scale_fill_gradient(trans = "log", labels = c(0.01, 0.02, 0.5, 0.1), breaks = c(0.01, 0.02, 0.05, 0.1))
+
+population_per_train <- ggplot(data = german_states_weighted) +
+  geom_sf(
+    aes(fill = n/population)
+  ) +
+  heatmap_theme +
+  scale_fill_gradient(trans = "log", labels = c(0.0001, 0.00005), breaks = c(0.0001, 0.00005)) 
 
 plot_tripple_comparison <- function(population_density, train_density, population_per_train) {
   plot_grid(
@@ -456,7 +449,7 @@ In allen drei Karten stechen die Stadtstaaten heraus. Auch kann man die dritte K
 
 Nachdem im Bundesländervergleich keine markanten Unterschiede erkannt wurde wird nun die Granularität mithilfe von Postleitzahlen(PLZ) erhöht. Dies wird in zwei schritten erledigt. Zuerst werden Gebiete mithilfe der ersten beiden Ziffern in der Postleitzahl gruppiert. Danach wird jede PLZ einzeln betrachtet.
 
-Zunächst müssen die Daten wieder angepasst werden. Hierzu werden die Postleitzahlen nach den ersten beiden Ziffern gruppiert und die Summe aller Einwohner sowie aller Bahnhöfe in diesem Gebiet hinzugefügt. Darauf wird mit *st_area* die Fläche jedes Gebietes aus den Geometriedaten berechnet, welches sehr rechenintensiv ist. Im Anschluss werden wieder drei Karten zur Bevölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt.
+Zunächst müssen die Daten wieder angepasst werden. Hierzu werden die Postleitzahlen nach den ersten beiden Ziffern gruppiert und die Summe aller Einwohner sowie aller Bahnhöfe in diesem Gebiet hinzugefügt. Dieser Prozess ist sehr rechenintensiv. Darauf wird mit *st_area* die Fläche jedes Gebietes aus den Geometriedaten berechnet. Im Anschluss werden wieder drei Karten zur Bevölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt.
 
 ```{r}
 #| label: plz-ziffern
@@ -480,10 +473,6 @@ grouped_plz <- german_plz_weighted %>%
 grouped_plz$qkm <- st_area(grouped_plz)
 grouped_plz <- grouped_plz %>% mutate(qkm = as.numeric(qkm))
 
-population_per_train <- ggplot(grouped_plz) +
-  geom_sf(aes(fill = einwohner/bahnhof_num)) +
-  scale_fill_gradient(trans = "log", labels = c(10000, 25000, 50000), breaks = c(10000, 25000, 50000)) +
-  heatmap_theme
 
 population_density <- ggplot(grouped_plz) +
   geom_sf(aes(fill = einwohner/qkm)) +
@@ -495,12 +484,17 @@ train_density <- ggplot(grouped_plz) +
   scale_fill_gradient(trans = "log", labels = c(4e-09, 1e-08, 3e-07), breaks = c(4e-09, 5e-08, 3e-07)) +
   heatmap_theme
 
+population_per_train <- ggplot(grouped_plz) +
+  geom_sf(aes(fill = einwohner/bahnhof_num)) +
+  scale_fill_gradient(trans = "log", labels = c(10000, 25000, 50000), breaks = c(10000, 25000, 50000)) +
+  heatmap_theme
+
 plot_tripple_comparison(population_density, train_density, population_per_train)
 ```
 
 todo: text erkentnisse
 
-#### volle plz todo
+#### Aufteilung in einzelne Postleitzahlen
 
 todo?: text einleitung oder schon oben mit drin
 
@@ -538,7 +532,7 @@ p1 <- ggplot(data = german_plz_weighted) +
     aes(fill = ratio1),
     linewidth = 0.01
   ) +
-  scale_fill_gradient(trans = "log", labels = c(10000, 25000, 50000), breaks = c(10000, 25000, 50000)) +
+  scale_fill_gradient(trans = "log") +
   heatmap_theme
 
 p2 <- ggplot(data = german_plz_weighted) +
@@ -546,7 +540,7 @@ p2 <- ggplot(data = german_plz_weighted) +
     aes(fill = ratio2),
     linewidth = 0.01
   ) +
-  scale_fill_gradient(trans = "log", labels = c(0.0001, 0.001, 0.005), breaks = c(0.0001, 0.001, 0.005)) +
+  scale_fill_gradient(trans = "log") +
   heatmap_theme
 
 p3 <- ggplot(data = german_plz_weighted) +
@@ -554,7 +548,7 @@ p3 <- ggplot(data = german_plz_weighted) +
     aes(fill = ratio3),
     linewidth = 0.01
   ) +
-  scale_fill_gradient(trans = "log", labels = c(4e-09, 1e-08, 3e-07), breaks = c(4e-09, 5e-08, 3e-07)) +
+  scale_fill_gradient(trans = "log") +
   heatmap_theme
 
 plot_tripple_comparison(p2, p3, p1)
