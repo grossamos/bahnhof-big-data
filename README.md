@@ -12,6 +12,7 @@
 - wie groß ist die durchschnittliche postleitzahl (evtl. auch vgl osten westen)
 - in eddies vergleich große der Stadt miteinbeziehen
 - Auftraggeber und Verkehrsbund vergleichen (einfach nochmal einen Graphen zu verkehrsbund machen)
+- Kategorieverteilung je Bundesland
 
 Fun facts:
 

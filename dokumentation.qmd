@@ -145,6 +145,7 @@ Der Bundesländerdatensatz wird manuel um diese Daten ergänzt [^6].
 
 ## Analyse der Daten
 
+### Lagenanalyse der Stationen
 Ein erster Überblick soll mithilfe einer Karte alle Bahnhöfe in Deutschland erstellt werden.
 Die in dem Stationsdatensatz enthaltenen Adressen werden mithilfe von `ggmap` auf Längen- und Breitengrade übersetzt.
 
@@ -208,77 +209,112 @@ ggplot() +
 ```
 
 In karte erkennbar:
-* Cluster um städte
-* Stationen folgen Bahnlinien zwischen städten -> evtl. ungerecht, da eine ortschaft wahrscheinlicher einen Bahnhof bekommst wenn sie auf einer bahnstrecke zwischen strecken liegt
-* In Bayern große Stationsfreie flächen, im norden, vorallem im osten besser ausgeweitet/verteilt
-* Viele Stationen an der Französischen grenze
 
-<!-- ## Geographische Analyse -->
-
-
-<!-- Alle Bahnhöfe als Punkte auf einer Karte: -->
-
-<!-- todo:  -->
-<!-- * Aufgabenträger je Bahnhof (pointcloud) -->
-<!-- * karte mit farbe je kategorie -->
-<!-- ```{r} -->
-<!-- ggplot() +  -->
-<!--   geom_sf(data = german_states) + -->
-<!--   geom_point( -->
-<!--     stations_geo_loc,  -->
-<!--     mapping = aes(x = lon, y = lat, color = Aufgabenträger), -->
-<!--     size = 0.1, -->
-<!--     show.legend = F -->
-<!--   )  -->
-<!-- ggplot() +  -->
-<!--   geom_sf(data = german_states) + -->
-<!--   geom_point( -->
-<!--     stations_geo_loc,  -->
-<!--     mapping = aes(x = lon, y = lat, color = `Kat. Vst`), -->
-<!--     size = 0.1, -->
-<!--   ) + -->
-<!--   scale_color_manual(values = c( -->
-<!--     "black", # Fernbahnof (Hbf) -->
-<!--     "blue", # Hbf größerer Städte -->
-<!--     "green", # Hbf kleiner/mittleren städten -->
-<!--     "yellow", # regionalbahnhof -->
-<!--     "red", # stadtteilbahnhof -->
-<!--     "orange", # landbahnof -->
-<!--     "pink" # ultra landbahnhof -->
-<!--   )) -->
-<!-- ``` -->
-
-<!-- Vergleich auf Bundesländerebene: -->
-<!-- ```{r} -->
-<!-- german_states_weighted <- left_join( -->
-<!--   german_states,  -->
-<!--   bahnhof %>%  -->
-<!--     count(Bundesland), -->
-<!--   by = c("name_1" = "Bundesland") -->
-<!-- ) -->
+ * Cluster um städte
+ * Stationen folgen Bahnlinien zwischen städten -> evtl. ungerecht, da eine ortschaft wahrscheinlicher einen Bahnhof bekommst wenn sie auf einer bahnstrecke zwischen strecken liegt
+ * In Bayern große Stationsfreie flächen, im norden, vorallem im osten besser ausgeweitet/verteilt
+ * Viele Stationen an der Französischen grenze
+ 
+Einfärben der Kategorien und Aufgabenträger ist ebenfalls interessant (s. @fig-colored-station-map)
 
 
-<!-- # Heatmap of station density -->
-<!-- p1 <- ggplot(data = german_states_weighted) +  -->
-<!--   geom_sf( -->
-<!--     aes(fill = population/n) -->
-<!--   ) + -->
-<!--   theme(legend.position = "bottom") -->
+```{r}
+#| code-fold: true
+#| label: fig-colored-station-map
+#| fig-cap: Karte aller Bahnstationen mit eingefärbten Aufgabenträgern und Kategorien
 
-<!-- p2 <- ggplot(data = german_states_weighted) +  -->
-<!--   geom_sf( -->
-<!--     aes(fill = population/area) -->
-<!--   ) + -->
-<!--   theme(legend.position = "bottom") -->
+train_point_resposible <- ggplot() +
+  geom_sf(data = german_states) +
+  geom_point(
+    stations_geo_loc,
+    mapping = aes(x = lon, y = lat, color = Aufgabenträger),
+    size = 0.1,
+    show.legend = F
+  ) +
+  bahn_map_theme
 
-<!-- p3 <- ggplot(data = german_states_weighted) +  -->
-<!--   geom_sf( -->
-<!--     aes(fill = n/area) -->
-<!--   ) + -->
-<!--   theme(legend.position = "bottom") -->
+train_point_category <- ggplot() +
+  geom_sf(data = german_states) +
+  geom_point(
+    stations_geo_loc,
+    mapping = aes(x = lon, y = lat, color = `Kat. Vst`),
+    size = 0.1,
+    alpha = 0.1
+  ) +
+  scale_color_manual(values = c(
+    "black", # Fernbahnof (Hbf)
+    "blue", # Hbf größerer Städte
+    "green", # Hbf kleiner/mittleren städten
+    "yellow", # regionalbahnhof
+    "red", # stadtteilbahnhof
+    "orange", # landbahnof
+    "pink" # ultra landbahnhof
+  )) +
+  labs(color = "Kategorie") +
+  guides(colour = guide_legend(override.aes = list(size=1))) +
+  bahn_map_theme
 
-<!-- plot_grid(p2, p3, p1, nrow = 1) -->
-<!-- ``` -->
+plot_grid(train_point_resposible, train_point_category, nrow = 1, rel_widths = c(1, 1.25))
+```
+Bemerkbar ist:
+ * städte haben cluster an categorie 4
+ * stuttgart hat als einzige stadt cat 3 -> wgn unterschiedlichem verkerhrsbund (s. discord für quelle und erklärung)
+ * ländliche gegenden haben  cat 5-7 => folglich schlechtere bahnhöfe
+ * wesentlich höherer cat 7 anteil im Norden! -> Benötigt evtl. anderen Graphen
+ 
+```{r}
+#| code-fold: true
+ggplot(bahnhof %>%
+         filter(!Bundesland %in% c("Hamburg", "Bremen", "Brandenburg", "Berlin")) # Städte haben keine ländliche region und haben daher andere verteilungen
+   ) +
+  geom_violin(aes(y = `Kat. Vst`, x = Bundesland, group = Bundesland)) +
+  coord_flip()
+```
+Thüringen, Mecklenburg Vorpommern und Aachsen Anhalt haben überdimensional viele cat 6/7 im vergelich zu allen anderen. Kann potentiell an Mangel an größeren Städten liegen?
+
+TODO: evtl. hier das mit der Bahnhofstraße einfügen?
+
+### Vergleich auf Bundesländerebene
+
+Vergleich auf Bundesländerebene:
+```{r}
+german_states_weighted <- left_join(
+  german_states,
+  bahnhof %>%
+    count(Bundesland),
+  by = c("name_1" = "Bundesland")
+)
+
+
+# Heatmap of station density
+population_per_train <- ggplot(data = german_states_weighted) +
+  geom_sf(
+    aes(fill = n/population)
+  ) +
+  scale_fill_gradient(trans = "log", labels = c(0.00001, 0.0001), breaks = c(0.00001, 0.0001)) +
+  bahn_map_theme +
+  theme(legend.position = "bottom", legend.title=element_blank())
+
+population_per_train
+
+population_density <- ggplot(data = german_states_weighted) +
+  geom_sf(
+    aes(fill = population/area)
+  ) +
+  scale_fill_gradient(trans = "log") +
+  bahn_map_theme +
+  theme(legend.position = "bottom", legend.title=element_blank())
+
+train_density <- ggplot(data = german_states_weighted) +
+  geom_sf(
+    aes(fill = n/area)
+  ) +
+  scale_fill_gradient(trans = "log", labels = c(0.01, 0.02, 0.5, 0.1), breaks = c(0.01, 0.02, 0.05, 0.1)) +
+  bahn_map_theme +
+  theme(legend.position = "bottom", legend.title=element_blank()) 
+
+plot_grid(population_density, train_density, population_per_train, nrow = 1, labels = c("Bevölkerungsdichte", "Bahnhofdichte (1/qkm)", "Bahnhof pro Person"), hjust = 0)
+```
 
 <!-- ### erste 2 ziffern plz (todo) -->
 
@@ -424,20 +460,23 @@ t = (table(bahnhof$Ort))
 t.order = as.data.frame(t[order(t, decreasing = T)])
 
 t.order
-t.order[1:10,]$Var1
-filter(bahnhof, Ort %in% t.order[1:10,]$Var1)
+t.order[1:12,]$Var1
+filter(bahnhof, Ort %in% t.order[1:12,]$Var1)
 
 str(bahnhof)
 
-top10 = filter(bahnhof, Ort %in% t.order[1:10,]$Var1)
-top10.order = ordered(top10, levels = t.order[1:10,]$Var1)
-top10.order
+
+top10 = filter(bahnhof, Ort %in% t.order[1:12,]$Var1)
+
+top10 <- top10 %>% left_join(t.order, by = c("Ort" = "Var1")) 
 
 # TODO order
 
 ggplot(data=top10) +
   geom_bar(
-    aes(x=Ort, fill=`Kat. Vst`),
+    aes(
+      x=reorder(Ort, Freq, decreasing = T), fill=`Kat. Vst`)
+    ,
     #stat="identity"
   ) + 
   theme(
