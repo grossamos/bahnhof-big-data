@@ -439,24 +439,22 @@ plot_grid(p2, p3, p1, nrow = 1)
 ### Versuch auf einem Grid
 
 ```{r}
-germany_matrix <- matrix(rep(0, 200*200), nrow = 200, ncol = 200)
-
-# Dim: 5.5-15.5 x 46-56
+germany_matrix <- matrix(rep(0, 50*80), nrow = 50, ncol = 120)
 
 # we need it to be sequential
 for(x in 1:nrow(stations_geo_loc)) {
-  lon <- round((stations_geo_loc[x, "lon"] - 5.5) * 20)[1, 1]
-  lat <- round((stations_geo_loc[x, "lat"] - 46) * 20)[1, 1]
+  lon <- round((stations_geo_loc[x, "lon"] - 5.5) * 5)[1, 1]
+  lat <- round((stations_geo_loc[x, "lat"] - 46) * 12)[1, 1]
   germany_matrix[lon, lat] <- germany_matrix[lon, lat] + 1
 }
 
 germany_df <- melt(germany_matrix, c("x", "y"), value.name = "z")
-
-color_palette <- brewer.pal(11, "Blues")
-color_palette[1] <- "#FFFFFF"
+germany_df$z[germany_df$z == 0] = NA
 
 ggplot(germany_df, aes(x, y, fill =z)) +
-  geom_tile() 
+  geom_tile() +
+  scale_fill_continuous(na.value = "white") +
+  theme(aspect.ratio = 4/3)
 
 ```
 
