@@ -7,9 +7,11 @@ format:
   html:
     fig-width: 8
     fig-height: 4
+toc: true
+toc-depth: 3
 ---
 
-## Fragestellung
+## Fragestellung {#sec-Fragestellung}
 
 Jeder kennt das Problem mit der Bahn Freunde oder Bekannte am Land zu besuchen.
 Die langsamen Regionalbahnen halten an gefühlt jeder Ortschaft, nur nicht der wo man hin will.
@@ -19,7 +21,7 @@ Unter diesem Hintergrund stellt sich die Frage, inwiefern Bahnhöfe trotz der vi
 
 ## Datenquellen
 
-Um diese Frage zu beantworten wir ein Datensatz der Deutschen Bahn mit allen deutschen Bahnstationen analysiert[^1].
+Um die Frage in @sec-Fragestellung zu beantworten haben wir ein Datensatz der Deutschen Bahn mit allen deutschen Bahnstationen analysiert[^1].
 Der Datensatz enthält Address, Verkehrsbund und Verwaltungsdaten für die Bahnstationen.
 Zusätzlich wird ein Datensatz mit Bevölkerungs-, Bundesland- und Postleitzahldaten[^2] [^3] ergänzt um einen späteren Abgleich möglich zu machen.
 Intuitiv wird erwartet, dass der Datensatz die ungleiche Verteilung zwischen Bahnhöfen im Land und der Stadt wiederspeigelt, aber im bundesweiten Vergleich alle ländlichen und städischen Gebieten ähnlich sind.
@@ -29,7 +31,9 @@ Intuitiv wird erwartet, dass der Datensatz die ungleiche Verteilung zwischen Bah
 [^3]: Hijmans, Robert J., University of California, Berkeley. Museum of Vertebrate Zoology. "First-level Administrative Divisions, Germany, 2015",  <https://geodata.lib.utexas.edu/catalog/stanford-nh891yz3147>, 2015
 
 
-### Laden der Daten
+## Laden der Daten
+
+In diesem Abschnitt werden die Daten aus den Datenquellen mit R eingelesen und bereinigt. Dies teil sich auf in die Daten der Stationen und in geographische Daten.
 
 ```{r}
 #| output: false
@@ -44,7 +48,7 @@ library(reshape2)
 library(RColorBrewer)
 ```
 
-#### Stationsdatensatz
+### Stationsdatensatz
 
 ```{r}
 #| output: false
@@ -87,7 +91,7 @@ Allgemein lässt sich aussagen, dass der Datensatz mit `r nrow(bahnhof)` Station
 [^4]: Deutsche Bahn, "bahnhof.de", <https://www.bahnhof.de/>, 2022
 [^5]: Deutsche Bahn, "Integrierter Bericht 2021", 2022
 
-#### Geographische Daten
+### Geographische Daten
 
 ```{r}
 #| output: false
@@ -194,7 +198,15 @@ Mithilfe dieser Daten und des Bundesland Shapefiles lässt sich nun die Karte al
 ```{r}
 #| echo: false
 
-bahn_map_theme <- theme(axis.line = element_blank(), axis.title = element_blank(), axis.text = element_blank(), panel.background = element_blank(), panel.grid = element_blank(), axis.ticks = element_blank())
+# used in multiple plots
+bahn_map_theme <- theme(
+  axis.line = element_blank(), 
+  axis.title = element_blank(), 
+  axis.text = element_blank(), 
+  panel.background = element_blank(), 
+  panel.grid = element_blank(), 
+  axis.ticks = element_blank()
+)
 ```
 
 ```{r}
@@ -259,6 +271,7 @@ train_point_category <- ggplot() +
 plot_grid(train_point_resposible, train_point_category, nrow = 1, rel_widths = c(1, 1.25))
 ```
 Bemerkbar ist:
+
  * städte haben cluster an categorie 4
  * stuttgart hat als einzige stadt cat 3 -> wgn unterschiedlichem verkerhrsbund (s. discord für quelle und erklärung)
  * ländliche gegenden haben  cat 5-7 => folglich schlechtere bahnhöfe
@@ -326,7 +339,7 @@ plot_tripple_comparison(population_density, train_density, population_per_train)
 
 ```
 
-### erste 2 ziffern plz (todo)
+### erste 2 ziffern plz
 
 ```{r}
 #| output: false
@@ -448,84 +461,61 @@ ggplot(germany_df, aes(x, y, fill =z)) +
 ```
 
 
-## Normale Diagramme
+### Weitere Diagramme
 
-
-### Boxplot
-im vergleich zu oben
-```{r}
-
-ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
-  geom_boxplot(aes(x = n, y = einwohner, fill = n, group = n))
-
-# ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
-#   geom_violin(aes(x = n, y = einwohner, fill = n, group = n))
-```
-
-
-### Fun fact
-
-dieser Prozentsatz an Bahnhöfen ist in einer Bahnhofstraße, Bahnhofallee, etc.
-```{r}
-bahnhof %>%
-  filter(grepl("Bahnhof", Straße)) %>%
-  count(.) / nrow(bahnhof)
-```
-
-<!-- todo:  -->
-<!-- * top 10 städte nach anzahl bahnhöfe (barchart) (zusätzlich aufteilung in kategorien) -->
+todo: braucht german_plz_weighted von oben
+<!-- ### Boxplot -->
+<!-- im vergleich zu oben -->
+<!-- ```{r} -->
+<!-- ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) + -->
+<!--   geom_boxplot(aes(x = n, y = einwohner, fill = n, group = n)) -->
+<!-- # ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) + -->
+<!-- #   geom_violin(aes(x = n, y = einwohner, fill = n, group = n)) -->
+<!-- ``` -->
 
 
 
-<!-- <!-- Stadt Land --> -->
-
-<!-- <!-- Ost West --> -->
-
-<!-- ## Fazit -->
-
-<!-- Erkenntnisse aus Daten: -->
-<!-- * Viele Lücken in Bahnhofskarte -->
-<!-- * (Bahnhofmenge korreliert leicht mit Einwohneranzahl) -->
-<!-- * .... -->
-
-### Fun fact
+### Fun facts
 Folgende Erkenntnisse passen nicht ganz zur Fragestellung, sind aber dennoch interessant.
 
 
 #### Prozentsatz an Bahnhöfen mit "Bahnhof" in Adresse
+Folgender Prozentsatz an Bahnhöfen ist an einer Adresse mit "Bahnhof":
 ```{r}
+#| code-fold: true
+
 bahnhof %>%
   filter(grepl("Bahnhof", Straße)) %>%
   count(.) / nrow(bahnhof)
 ```
 
-#### Top 10 Städte nach Bahnhofanzahl
-todo: 
-* top 10 städte nach anzahl bahnhöfe (barchart) (zusätzlich aufteilung in kategorien)
+#### Top 12 Städte nach Bahnhofanzahl
+
+<!-- warum top12? -->
+
+Zur Vorbereitung wird das data frame "bahnhof" nach Orten gruppiert und die Häufigkeit jedes Ortes berechnet. Diese Häufigkeiten werden in einem neuen data frame namens "n.orte" gespeichert und in absteigender Reihenfolge sortiert. Danach wird das data frame "top12" erstellt, indem die Zeilen des ursprünglichen data frames "bahnhof" ausgewählt werden, die sich auf die Top 12 Orte beziehen. Schließlich wird das data frame "top12" mit dem sortierten data frame "n.orte.order" verbunden, um die Häufigkeit jedes Ortes hinzuzufügen. Anschließend wird mit ggplot ein Balkendiagramm erstellt, das die Anzahl der Bahnhöfe in den Top 12 Städten anzeigt und die Bahnhofskategorien farblich unterscheidet.
 
 ```{r}
-t = (table(bahnhof$Ort))
-t.order = as.data.frame(t[order(t, decreasing = T)])
+#| code-fold: true
+#| label: fig-top12
+#| fig-cap: Top 12 Städte nach Bahnhöfen
 
-t.order
-t.order[1:12,]$Var1
-filter(bahnhof, Ort %in% t.order[1:12,]$Var1)
+n.orte = (table(bahnhof$Ort))
+n.orte.order = as.data.frame(n.orte[order(n.orte, decreasing = T)])
 
-str(bahnhof)
+top12 = filter(bahnhof, Ort %in% n.orte.order[1:12,]$Var1)
+
+top12 <- top12 %>% left_join(n.orte.order, by = c("Ort" = "Var1")) 
+
+# TODO colormatching
 
 
-top10 = filter(bahnhof, Ort %in% t.order[1:12,]$Var1)
-
-top10 <- top10 %>% left_join(t.order, by = c("Ort" = "Var1")) 
-
-# TODO order
-
-ggplot(data=top10) +
+ggplot(data=top12) +
   geom_bar(
     aes(
-      x=reorder(Ort, Freq, decreasing = T), fill=`Kat. Vst`)
-    ,
-    #stat="identity"
+      x=reorder(Ort, Freq, decreasing = T), 
+      fill=`Kat. Vst`
+    )
   ) + 
   theme(
     axis.title.x = element_blank(),
@@ -533,20 +523,65 @@ ggplot(data=top10) +
   ) + 
   labs(
     y = "Anzahl Bahnhöfe",
-    title = "Top 10 Städte nach Bahnhöfen",
+    title = "Top 12 Städte nach Bahnhöfen",
     fill = "Bahnhofskategorie"
   )
-
 
 ```
 
 
-#### eventuel?: gleiches barchart aber mit bundesländern
+An @fig-top12 lassen sich folgende Erkenntnisse ableiten:
+
+Berlin hat im Vergleich zu den anderen Städten deutlich mehr Bahnhöfe. Dies könnte darauf hindeuten, dass das gesamte Gebiet als Adresse "Berlin" geführt wird, wodurch die Anzahl der Bahnhöfe in der Stadt scheinbar überdurchschnittlich hoch ist.
+
+München, Frankfurt und Stuttgart haben im Vergleich zu den anderen Städten verhältnismäßig mehr Bahnhöfe der Kategorie 3. Dies ist auch in Figure @fig-colored-station-map sichtbar, da hier in der rechten Karte mit leicht transparenten Punkten in diesen Städten die Kategorie 3 deutlich ausgeprägter ist.
+
+#### Bundesländer nach Bahnhofskategorien
+
+```{r}
+#| code-fold: true
+
+
+n.bundesland = (table(bahnhof$Bundesland))
+n.bundesland.order = as.data.frame(n.bundesland[order(n.bundesland, decreasing = T)])
+
+bahnhof.bundesland <- bahnhof %>% left_join(n.bundesland.order, by = c("Bundesland" = "Var1")) 
+
+# TODO colormatching
+
+ggplot(data=bahnhof.bundesland) +
+  geom_bar(
+    aes(
+      x=reorder(Bundesland, Freq, decreasing = T), 
+      fill=`Kat. Vst`
+    )
+  ) + 
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(angle = -20, hjust = 0)
+  ) + 
+  labs(
+    y = "Anzahl Bahnhöfe",
+    title = "Top Bundesländer nach Bahnhöfen",
+    fill = "Bahnhofskategorie"
+  )
+
+```
+
+
+
+## Fazit !TODO!
+
+Erkenntnisse aus Daten:
+* Viele Lücken in Bahnhofskarte
+* (Bahnhofmenge korreliert leicht mit Einwohneranzahl)
+* ....
+
 
 
 <!-- ## Quellen -->
 
-- Bevölkerungsdaten: https://www.suche-postleitzahl.org/downloads
-- Stationsdaten: https://data.deutschebahn.com/dataset/data-stationsdaten.html
-- Shapefiles: https://geodata.lib.utexas.edu/catalog/stanford-nh891yz3147
-- Bahnhofsanzahl Deutschland: https://www.deutschebahn.com/pr-hamburg-de/DB-im-Norden-1/Regionale-Themen/Bahnhoefe-der-Deutschen-Bahn-6121238
+<!-- - Bevölkerungsdaten: https://www.suche-postleitzahl.org/downloads -->
+<!-- - Stationsdaten: https://data.deutschebahn.com/dataset/data-stationsdaten.html -->
+<!-- - Shapefiles: https://geodata.lib.utexas.edu/catalog/stanford-nh891yz3147 -->
+<!-- - Bahnhofsanzahl Deutschland: https://www.deutschebahn.com/pr-hamburg-de/DB-im-Norden-1/Regionale-Themen/Bahnhoefe-der-Deutschen-Bahn-6121238 -->
