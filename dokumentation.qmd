@@ -254,6 +254,8 @@ train_point_category <- ggplot() +
   guides(colour = guide_legend(override.aes = list(size=1))) +
   bahn_map_theme
 
+#| label: fig-station-map-kat
+#| fig-cap: Karte aller Bahnstationen nach Kategorie
 plot_grid(train_point_resposible, train_point_category, nrow = 1, rel_widths = c(1, 1.25))
 ```
 Bemerkbar ist:
@@ -455,7 +457,13 @@ bahnhof %>%
 
 <!-- warum top12? -->
 
+Zur Vorbereitung wird das data frame "bahnhof" nach Orten gruppiert und die Häufigkeit jedes Ortes berechnet. Diese Häufigkeiten werden in einem neuen data frame namens "n.orte" gespeichert und in absteigender Reihenfolge sortiert. Danach wird das data frame "top12" erstellt, indem die Zeilen des ursprünglichen data frames "bahnhof" ausgewählt werden, die sich auf die Top 12 Orte beziehen. Schließlich wird das data frame "top12" mit dem sortierten data frame "n.orte.order" verbunden, um die Häufigkeit jedes Ortes hinzuzufügen. Anschließend wird mit ggplot ein Balkendiagramm erstellt, das die Anzahl der Bahnhöfe in den Top 12 Städten anzeigt und die Bahnhofskategorien farblich unterscheidet.
+
 ```{r}
+#| code-fold: true
+#| label: top12
+#| fig-cap: Top 12 Städte nach Bahnhöfen
+
 n.orte = (table(bahnhof$Ort))
 n.orte.order = as.data.frame(n.orte[order(n.orte, decreasing = T)])
 
@@ -464,6 +472,7 @@ top12 = filter(bahnhof, Ort %in% n.orte.order[1:12,]$Var1)
 top12 <- top12 %>% left_join(n.orte.order, by = c("Ort" = "Var1")) 
 
 # TODO colormatching
+
 
 ggplot(data=top12) +
   geom_bar(
@@ -485,7 +494,18 @@ ggplot(data=top12) +
 
 ```
 
+An @top12 lassen sich folgende Erkenntnisse ableiten:
+
+Berlin hat im Vergleich zu den anderen Städten deutlich mehr Bahnhöfe. Dies könnte darauf hindeuten, dass das gesamte Gebiet als Adresse "Berlin" geführt wird, wodurch die Anzahl der Bahnhöfe in der Stadt scheinbar überdurchschnittlich hoch ist.
+
+München, Frankfurt und Stuttgart haben im Vergleich zu den anderen Städten verhältnismäßig mehr Bahnhöfe der Kategorie 3. Dies ist auch in Figure @fig-station-map-kat sichtbar, da hier in der rechten Karte mit leicht transparenten Punkten in diesen Städten die Kategorie 3 deutlich ausgeprägter ist.
+
+#### Bundesländer nach Bahnhofskategorien
+
 ```{r}
+#| code-fold: true
+
+
 n.bundesland = (table(bahnhof$Bundesland))
 n.bundesland.order = as.data.frame(n.bundesland[order(n.bundesland, decreasing = T)])
 
@@ -514,7 +534,7 @@ ggplot(data=bahnhof.bundesland) +
 
 
 
-#### eventuel?: gleiches barchart aber mit bundesländern
+
 
 
 <!-- ## Quellen -->
