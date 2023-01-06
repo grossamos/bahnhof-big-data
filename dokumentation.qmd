@@ -574,14 +574,20 @@ todo: text erkenntnisse
 
 ### Bahnhoskategorien nach Einwohner
 
-todo text: im vergleich zu oben & erkentnisse daraus
+Um zu überprüfen, ob die Einwohneranzahl wie vermutet mit der Bahnhofsanzahl verwand ist, werden die Beiden größen miteinander verglichen.
+Damit der Graph aufgrund der vielen Postleitzahlen mit "0"-Werten nicht verfälscht wird, muss wie in den bisherigen Graphiken eine logarithmische Skalierung gewählt werden.
+Da sich aufgrund der Wertbereichsunterschiede zwischen der Einwohner- und Bahnhofsanzahl die Punkte eines Punktdiagramms zu sehr häufen würden, wird sich für ein Box-Plot entschieden.
+
 
 ```{r}
-ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
-  geom_boxplot(aes(x = n, y = einwohner, fill = n, group = n))
-# ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
-#   geom_violin(aes(x = n, y = einwohner, fill = n, group = n))
+grouped_german_plz_weighted <- german_plz_weighted %>% 
+    mutate(bin = cut(einwohner/qkm, seq(min(einwohner/qkm), max(einwohner/qkm) + 5000, 5000), right = FALSE))
+
+ggplot(grouped_german_plz_weighted) +
+  geom_boxplot(aes(x = einwohner/qkm, y = n/qkm, fill = bin, group = bin)) +
+  scale_y_continuous(trans = "log")
 ```
+Erkennbar ist das wie erwartet höhere Einwohnerdichten mit höheren Bahnhofsdichten verwand sind.
 
 ### Versuch auf einem Grid
 
