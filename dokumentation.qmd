@@ -389,7 +389,7 @@ Im Vergleich zu @fig-top12 ist es auffällig, dass es deutlich mehr Bahnhöfe de
 
 In diesem Abschnitt werden nun weitere Bundesländerdaten (wie Einwohner und Fläche) zur Analyse hinzugefügt.
 
-Hierzu wird dem Dataframe *german_states* die Anzahl der Bahnhöfe in diesem Bundesland hinzugefügt. Darauf werden 3 Karten zur Befölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt. Diese werden nebeneinander angezeigt um die verschiedenen Daten gut vergleichen zu können.
+Hierzu wird dem Dataframe `german_states` die Anzahl der Bahnhöfe in diesem Bundesland hinzugefügt. Darauf werden 3 Karten zur Befölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt. Diese werden nebeneinander angezeigt um die verschiedenen Daten gut vergleichen zu können.
 
 ::: callout-note
 In diesen und allen folgenden Karten bis @fig-plz-tripple-plot wird eine logarithmische Scala verwendet, da die Unterschiede nicht erkennbar sind. Dies ist der Fall, da immer wieder einzelne Ausreißer wie Städte oder Stadtstaaten die Skala zu stark beeinflussen. Mit der logarithmischen Skala können somit auch Unterschiede in den restlichen Gebieten erkannt werden.
@@ -397,6 +397,8 @@ In diesen und allen folgenden Karten bis @fig-plz-tripple-plot wird eine logarit
 
 ```{r}
 #| code-fold: true
+#| fig-cap: Bundesländer im Vergleich
+#| label: fig-state-cmp
 
 german_states_weighted <- left_join(
   german_states,
@@ -444,16 +446,22 @@ plot_tripple_comparison(population_density, train_density, population_per_train)
 
 ```
 
-In allen drei Karten stechen die Stadtstaaten heraus. Auch kann man die dritte Karte als Verhältnisdiagramm zu den ersten Beiden ansehen (1: n/population 2: population/area 3: n/area als Verhältnis von 1 und 2). So könnte man aus den ersten Karten geographische Zusammenhänge erahnen, welche durch die dritte Karte revidiert werden. Hierdurch wird die initiale Vermutung bestätigt, dass es Unterschiede zwischen Stadt und Land gibt aber es keine klaren Unterschiede im Bundesländervergleich gibt. Dies heißt trotzdem nicht, dass es keine Unterschiede gibt und alle Bundesländer gleich aufgestellt sind.
+In allen drei Karten stechen die Stadtstaaten heraus. 
+Auch kann man die dritte Karte als Verhältnisdiagramm zu den ersten Beiden ansehen (1: n/population 2: population/area 3: n/area als Verhältnis von 1 und 2).
+Es ist ein klare Trennlinie zwischen den alten und neuen Bundesländern zu erkennen.
+Die neuen bundesländer scheinen im schnitt mehr Bahnhöfe pro Person zu haben als die alten.
+
+<!-- So könnte man aus den ersten Karten geographische Zusammenhänge erahnen, welche durch die dritte Karte revidiert werden. Hierdurch wird die initiale Vermutung bestätigt, dass es Unterschiede zwischen Stadt und Land gibt aber es keine klaren Unterschiede im Bundesländervergleich gibt. Dies heißt trotzdem nicht, dass es keine Unterschiede gibt und alle Bundesländer gleich aufgestellt sind. -->
 
 ### Mehr Granularität durch Postleitzahlen
 
-Nachdem im Bundesländervergleich keine markanten Unterschiede erkannt wurde wird nun die Granularität mithilfe von Postleitzahlen(PLZ) erhöht. Dies wird in zwei schritten erledigt. Zuerst werden Gebiete mithilfe der ersten beiden Ziffern in der Postleitzahl gruppiert. Danach wird jede PLZ einzeln betrachtet.
+Um den im Bundesländervergleich markanten Unterschied genauer zu analysieren wird nun die Granularität mithilfe von Postleitzahlen(PLZ) erhöht. Dies wird in zwei schritten erledigt. Zuerst werden Gebiete mithilfe der ersten beiden Ziffern in der Postleitzahl gruppiert. Danach wird jede PLZ einzeln betrachtet.
 
-Zunächst müssen die Daten wieder angepasst werden. Hierzu werden die Postleitzahlen nach den ersten beiden Ziffern gruppiert und die Summe aller Einwohner sowie aller Bahnhöfe in diesem Gebiet hinzugefügt. Dieser Prozess ist sehr rechenintensiv. Darauf wird mit *st_area* die Fläche jedes Gebietes aus den Geometriedaten berechnet. Im Anschluss werden wieder drei Karten zur Bevölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt.
+Zunächst müssen die Daten wieder angepasst werden. Hierzu werden die Postleitzahlen nach den ersten beiden Ziffern gruppiert und die Summe aller Einwohner sowie aller Bahnhöfe in diesem Gebiet hinzugefügt. Dieser Prozess ist sehr rechenintensiv. Darauf wird mit `st_area` die Fläche jedes Gebietes aus den Geometriedaten berechnet. Im Anschluss werden wieder drei Karten zur Bevölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt.
 
 ```{r}
 #| label: plz-ziffern
+#| fig-cap: Postleitregionen im Vergleich
 
 german_plz_weighted <- left_join(
   german_plz,
