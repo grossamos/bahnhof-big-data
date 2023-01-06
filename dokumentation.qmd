@@ -511,22 +511,8 @@ Datentransformation:
 
 todo: text datenmanipulation
 
-```{r}
-#| output: false
 
-german_plz_weighted <- german_plz_weighted %>%
-  mutate(
-    ratio1 = einwohner/n,
-    ratio2 = einwohner/qkm,
-    ratio3 = n/qkm,
-  ) %>%
-  replace_na(list(n = 0, ratio1 = 0, ratio2 = 0, ratio3 = 0))
-
-# TODO (obersten 2 sind flughäfen)
-# german_plz_weighted %>% arrange((ratio2))
-```
-
-todo: text datenqualität
+todo: text datenqualität (entfernte entfernung der na's)
 
 Plotting:
 
@@ -536,31 +522,32 @@ Plotting:
 #| fig-cap: Vergleich auf Ebene einzelner Postleitzahlen
 
 # wir sehen wesentlich breiteren ausbau im osten (mehr plz haben bahnhöfe)
-p1 <- ggplot(data = german_plz_weighted) +
+
+population_density.plz <- ggplot(data = german_plz_weighted) +
   geom_sf(
-    aes(fill = ratio1),
-    linewidth = 0.01
+    aes(fill = einwohner/qkm),
+    color = NA
   ) +
   scale_fill_gradient(trans = "log") +
   heatmap_theme
 
-p2 <- ggplot(data = german_plz_weighted) +
+station_density.plz <- ggplot(data = german_plz_weighted) +
   geom_sf(
-    aes(fill = ratio2),
-    linewidth = 0.01
+    aes(fill = n/qkm),
+    color = NA
   ) +
   scale_fill_gradient(trans = "log") +
   heatmap_theme
 
-p3 <- ggplot(data = german_plz_weighted) +
+stations_per_population.plz <- ggplot(data = german_plz_weighted) +
   geom_sf(
-    aes(fill = ratio3),
-    linewidth = 0.01
+    aes(fill = n/einwohner),
+    color = NA
   ) +
   scale_fill_gradient(trans = "log") +
   heatmap_theme
 
-plot_tripple_comparison(p2, p3, p1)
+plot_tripple_comparison(population_density.plz, station_density.plz, stations_per_population.plz)
 ```
 
 todo: text erkenntnisse
