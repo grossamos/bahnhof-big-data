@@ -11,7 +11,7 @@ toc: true
 toc-depth: 3
 ---
 
-## Fragestellung
+## Fragestellung {#sec-Fragestellung}
 
 Jeder kennt das Problem mit der Bahn Freunde oder Bekannte am Land zu besuchen.
 Die langsamen Regionalbahnen halten an gefühlt jeder Ortschaft, nur nicht der wo man hin will.
@@ -21,7 +21,7 @@ Unter diesem Hintergrund stellt sich die Frage, inwiefern Bahnhöfe trotz der vi
 
 ## Datenquellen
 
-Um diese Frage zu beantworten wir ein Datensatz der Deutschen Bahn mit allen deutschen Bahnstationen analysiert[^1].
+Um die Frage in @sec-Fragestellung zu beantworten haben wir ein Datensatz der Deutschen Bahn mit allen deutschen Bahnstationen analysiert[^1].
 Der Datensatz enthält Address, Verkehrsbund und Verwaltungsdaten für die Bahnstationen.
 Zusätzlich wird ein Datensatz mit Bevölkerungs-, Bundesland- und Postleitzahldaten[^2] [^3] ergänzt um einen späteren Abgleich möglich zu machen.
 Intuitiv wird erwartet, dass der Datensatz die ungleiche Verteilung zwischen Bahnhöfen im Land und der Stadt wiederspeigelt, aber im bundesweiten Vergleich alle ländlichen und städischen Gebieten ähnlich sind.
@@ -32,6 +32,8 @@ Intuitiv wird erwartet, dass der Datensatz die ungleiche Verteilung zwischen Bah
 
 
 ## Laden der Daten
+
+In diesem Abschnitt werden die Daten aus den Datenquellen mit R eingelesen und bereinigt. Dies teil sich auf in die Daten der Stationen und in geographische Daten.
 
 ```{r}
 #| output: false
@@ -194,7 +196,15 @@ Mithilfe dieser Daten und des Bundesland Shapefiles lässt sich nun die Karte al
 ```{r}
 #| echo: false
 
-bahn_map_theme <- theme(axis.line = element_blank(), axis.title = element_blank(), axis.text = element_blank(), panel.background = element_blank(), panel.grid = element_blank(), axis.ticks = element_blank())
+# used in multiple plots
+bahn_map_theme <- theme(
+  axis.line = element_blank(), 
+  axis.title = element_blank(), 
+  axis.text = element_blank(), 
+  panel.background = element_blank(), 
+  panel.grid = element_blank(), 
+  axis.ticks = element_blank()
+)
 ```
 
 ```{r}
@@ -259,6 +269,7 @@ train_point_category <- ggplot() +
 plot_grid(train_point_resposible, train_point_category, nrow = 1, rel_widths = c(1, 1.25))
 ```
 Bemerkbar ist:
+
  * städte haben cluster an categorie 4
  * stuttgart hat als einzige stadt cat 3 -> wgn unterschiedlichem verkerhrsbund (s. discord für quelle und erklärung)
  * ländliche gegenden haben  cat 5-7 => folglich schlechtere bahnhöfe
@@ -295,7 +306,11 @@ population_per_train <- ggplot(data = german_states_weighted) +
   ) +
   scale_fill_gradient(trans = "log", labels = c(0.00001, 0.0001), breaks = c(0.00001, 0.0001)) +
   bahn_map_theme +
-  theme(legend.position = "bottom", legend.title=element_blank())
+  theme(
+    legend.position = "bottom", 
+    legend.title=element_blank()
+  ) +
+  ggtitle("Anzahl Bahnhöfe pro Einwohner")
 
 population_per_train
 
