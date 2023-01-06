@@ -454,6 +454,7 @@ Zunächst müssen die Daten wieder angepasst werden. Hierzu werden die Postleitz
 
 ```{r}
 #| label: plz-ziffern
+#| code-fold: true
 
 german_plz_weighted <- left_join(
   german_plz,
