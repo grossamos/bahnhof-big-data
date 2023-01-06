@@ -10,6 +10,7 @@ format:
       dark: darkly
     fig-width: 8
     fig-height: 4
+    number-sections: True
 toc: true
 toc-depth: 3
 execute:
@@ -430,10 +431,11 @@ train_density <- ggplot(data = german_states_weighted) +
 
 population_per_train <- ggplot(data = german_states_weighted) +
   geom_sf(
-    aes(fill = n/population)
+    aes(fill = population/n)
   ) +
   heatmap_theme +
-  scale_fill_gradient(trans = "log", labels = c(0.0001, 0.00005), breaks = c(0.0001, 0.00005)) 
+  scale_fill_gradient(trans = "log", labels = c(6000, 15000, 30000), breaks = c(6000, 15000, 30000)) 
+
 
 plot_tripple_comparison <- function(population_density, train_density, population_per_train) {
   plot_grid(
@@ -441,7 +443,7 @@ plot_tripple_comparison <- function(population_density, train_density, populatio
     train_density, 
     population_per_train, 
     nrow = 1, 
-    labels = c("Bevölkerungsdichte(1/km²)", "Bahnhofdichte (1/km²)", "Bahnhöfe pro Person"), 
+    labels = c("Bevölkerungsdichte(1/km²)", "Bahnhofdichte (1/km²)", "Einwohner pro Bahnhof"), 
     hjust = 0,
     vjust = 1)  
 }
@@ -455,22 +457,21 @@ Auch kann man die dritte Karte als Verhältnisdiagramm zu den ersten Beiden anse
 $$
 1: \frac{n}{population} \hspace{1cm} 2: \frac{population}{area} \hspace{1cm}  3: \frac{n}{area}
 $$
-(1: n/population 2: population/area 3: n/area als Verhältnis von 1 und 2).
-Es ist ein Trennlinie zwischen den alten und neuen Bundesländern zu erahnen.
+In der dritten Karte ist eine Trennlinie zwischen den alten und neuen Bundesländern zu erahnen.
 Die neuen Bundesländer scheinen im schnitt mehr Bahnhöfe pro Person zu haben als die alten.  
 
 <!-- So könnte man aus den ersten Karten geographische Zusammenhänge erahnen, welche durch die dritte Karte revidiert werden. Hierdurch wird die initiale Vermutung bestätigt, dass es Unterschiede zwischen Stadt und Land gibt aber es keine klaren Unterschiede im Bundesländervergleich gibt. Dies heißt trotzdem nicht, dass es keine Unterschiede gibt und alle Bundesländer gleich aufgestellt sind. -->
 
 ### Mehr Granularität durch Postleitzahlen
 
-Um den im Bundesländervergleich markanten Unterschied genauer zu analysieren wird nun die Granularität mithilfe von Postleitzahlen(PLZ) erhöht. Dies wird in zwei schritten erledigt. Zuerst werden Gebiete mithilfe der ersten beiden Ziffern in der Postleitzahl gruppiert. Danach wird jede PLZ einzeln betrachtet.
+Um den im Bundesländervergleich markanten Unterschied genauer zu analysieren wird nun die Granularität mithilfe von Postleitzahlen(PLZ) erhöht. Dies wird in zwei schritten erledigt. Zuerst werden Gebiete mithilfe der ersten beiden Ziffern in der Postleitzahl (Postleitregionen) gruppiert. Danach wird jede PLZ einzeln betrachtet.
 
-Zunächst müssen die Daten wieder angepasst werden. Hierzu werden die Postleitzahlen nach den ersten beiden Ziffern gruppiert und die Summe aller Einwohner sowie aller Bahnhöfe in diesem Gebiet hinzugefügt. Dieser Prozess ist sehr rechenintensiv. Darauf wird mit `st_area` die Fläche jedes Gebietes aus den Geometriedaten berechnet. Im Anschluss werden wieder drei Karten zur Bevölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt.
+Zunächst müssen die Daten wieder angepasst werden. Hierzu werden die Postleitzahlen nach den ersten beiden Ziffern gruppiert und die Summe aller Einwohner sowie aller Bahnhöfe in diesem Gebiet hinzugefügt. Dieser Prozess ist sehr rechenintensiv. Darauf wird mit `st_area` die Fläche jedes Gebietes aus den Geometriedaten berechnet. Zusätzlich werden hier outlier herrausgefiltert. In diesem Fall sind das PLZ welche unter 30 Einwohner haben. Diese PLZ beziehen sich auf Spezialfälle wie Flughäfen mit mehreren Bahnhöfen und kaum Einwohnern. Im Anschluss werden wieder drei Karten zur Bevölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt.
 
 ```{r}
-#| label: plz-ziffern
 #| code-fold: true
-#| fig-cap: Postleitregionen im Vergleich
+#| label: fig-plz-ziffern
+#| fig-cap: Postleitregionen (ersten zwei Stellen) im Vergleich
 
 german_plz_weighted <- left_join(
   german_plz,
@@ -480,10 +481,8 @@ german_plz_weighted <- left_join(
   by = c("plz" = "PLZ")
 )
 
-# todo dataquality
-# german_plz_weighted %>% arrange((einwohner/qkm))
+# filtern von outliern
 german_plz_weighted <- german_plz_weighted %>%
-  filter(n > 0) %>%
   filter(einwohner > 30)
 
 grouped_plz <- german_plz_weighted %>%
@@ -496,23 +495,24 @@ grouped_plz <- german_plz_weighted %>%
 
 
 grouped_plz$qkm <- st_area(grouped_plz)
-grouped_plz <- grouped_plz %>% mutate(qkm = as.numeric(qkm))
+grouped_plz <- grouped_plz %>% mutate(qkm = as.numeric(qkm)/1000000) # m² to km²
 
 
 population_density <- ggplot(grouped_plz) +
   geom_sf(aes(fill = einwohner/qkm)) +
-  scale_fill_gradient(trans = "log", labels = c(0.0001, 0.001, 0.005), breaks = c(0.0001, 0.001, 0.005)) +
+  scale_fill_gradient(trans = "log", labels = c(100, 500, 2000), breaks = c(100, 500, 2000)) +
   heatmap_theme
 
 train_density <- ggplot(grouped_plz) +
   geom_sf(aes(fill = bahnhof_num/qkm)) +
-  scale_fill_gradient(trans = "log", labels = c(4e-09, 1e-08, 3e-07), breaks = c(4e-09, 5e-08, 3e-07)) +
+  scale_fill_gradient(trans = "log", labels = c(0.01, 0.5, 0.2), breaks = c(0.01, 0.05, 0.2)) +
   heatmap_theme
 
 population_per_train <- ggplot(grouped_plz) +
   geom_sf(aes(fill = einwohner/bahnhof_num)) +
-  scale_fill_gradient(trans = "log", labels = c(10000, 25000, 50000), breaks = c(10000, 25000, 50000)) +
+  scale_fill_gradient(trans = "log", labels = c(5000, 20000, 70000), breaks = c(5000, 20000, 70000), limits= c(5000, 70000)) +
   heatmap_theme
+
 
 plot_tripple_comparison(population_density, train_density, population_per_train)
 ```
@@ -520,6 +520,8 @@ plot_tripple_comparison(population_density, train_density, population_per_train)
 todo: text erkentnisse
 
 - 3 regionen
+
+Mit diesen drei Karten kann man die vorhergehenden Vermutungen spezifizieren. Es sind nun in der dritten Karte drei Regionen (Ost, Nordwest und Süd) zu erkennen, welche eine unterschiedliche Anzahl an Bahnhöfen pro Person haben.
 
 #### Aufteilung in einzelne Postleitzahlen
 
@@ -539,14 +541,12 @@ Plotting:
 #| label: fig-plz-tripple-plot
 #| fig-cap: Vergleich auf Ebene einzelner Postleitzahlen
 
-# wir sehen wesentlich breiteren ausbau im osten (mehr plz haben bahnhöfe)
-  
 population_density.plz <- ggplot(data = german_plz_weighted) +
   geom_sf(
     aes(fill = einwohner/qkm),
     color = NA
   ) +
-  scale_fill_gradient(trans = "log") +
+  scale_fill_gradient(trans = "log", labels = c(10, 500, 20000), breaks = c(10, 500, 20000)) +
   heatmap_theme
 
 station_density.plz <- ggplot(data = german_plz_weighted) +
@@ -554,23 +554,28 @@ station_density.plz <- ggplot(data = german_plz_weighted) +
     aes(fill = n/qkm),
     color = NA
   ) +
-  scale_fill_gradient(trans = "log") +
+  scale_fill_gradient(trans = "log", labels = c(0.01, 0.1, 1), breaks = c(0.01, 0.1, 1)) +
   heatmap_theme
 
-stations_per_population.plz <- ggplot(data = german_plz_weighted) +
+population_per_station.plz <- ggplot(data = german_plz_weighted) +
   geom_sf(
-    aes(fill = n/einwohner),
+    aes(fill = einwohner/n),
     color = NA
   ) +
-  scale_fill_gradient(trans = "log") +
+  scale_fill_gradient(trans = "log", labels = c(500, 2000, 20000), breaks = c(500, 2000, 20000)) +
   heatmap_theme
 
-plot_tripple_comparison(population_density.plz, station_density.plz, stations_per_population.plz)
+plot_tripple_comparison(population_density.plz, station_density.plz, population_per_station.plz)
 ```
+
+
+Mit dieser feien Granularität sieht man nun, dass die Bahnhofsdichte stark mit der Bevölkerungsdichte zusammenhängt. Jedoch ist das Verhältniss Einwohner pro Bahnhof in Deutschland recht gleichmäßig verteilt. Es gibt keinen großen Unterschied zwischen Land- und Stadtregionen. Dies gilt zumindest an den Postleitzahlen, an welchen es mindestens einen Bahnhof gibt. Erstaunlicherweise hat die Karte der Bahnhofsdichte (und somit auch die Dritte) großflächige Lücken (graue Stellen) an welchen es gar keinen Bahnhof gibt. Dennoch kann man feststellen das die Lücken im Osten des Landes deutlich kleiner sind und es somit in fast jeder PLZ mindestens einen Bahnhof gibt. Dies kann jedoch auch damit zusammenhängen, dass die PLZ-Regionen sehr unterschiedlich groß sind. Mehr dazu in @sec-grid
 
 todo: text erkenntnisse
 
 - alles gleichmäßig und "gerecht"
+- wir sehen wesentlich breiteren ausbau im osten (mehr plz haben bahnhöfe) (mehr fläche)
+  
 
 ### Bahnhoskategorien nach Einwohner
 
@@ -583,7 +588,7 @@ ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
 #   geom_violin(aes(x = n, y = einwohner, fill = n, group = n))
 ```
 
-### Versuch auf einem Grid
+### Versuch auf einem Grid {#sec-grid}
 
 todo: text einleitung
 
