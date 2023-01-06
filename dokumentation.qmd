@@ -215,7 +215,7 @@ ggplot() +
   bahn_map_theme
 ```
 
-Städte sind auf der Karte leicht als Bahnhofs-Cluster zu erkennen. Ausgehend von den Großstädten breiten sich Bahnhöfe im Umland aus und binden kleinere Städte an das Bahnnetz. Zusätzlich sind zwischen den Städten die einzelnen Bahnstrecken zu erkennen. Bezogen auf die Fragestellung lässt sich durch die Karte leicht erkennen, dass sich Bahnhöfe erwartungsgemäß eher in städtische Regionen häufen als in ländlichen. <!-- Erwartungsgemäß sind ländliche Gebiete durch welche Bahnstrecken gehen (die Städte mit einender verbinden) besser angebunden als ländliche Gegenden die nich auf solchen Strecken liegen. -->
+Städte sind auf der Karte leicht als Bahnhofs-Cluster zu erkennen. Ausgehend von den Großstädten breiten sich Bahnhöfe im Umland aus und binden kleinere Städte an das Bahnnetz. Zusätzlich sind zwischen den Städten die einzelnen Bahnstrecken zu erkennen. Bezogen auf die Fragestellung lässt sich durch die Karte leicht erkennen, dass sich Bahnhöfe erwartungsgemäß eher in städtische Regionen häufen als in ländlichen. <!-- Erwartungsgemäß sind ländliche Gebiete durch welche Bahnstrecken gehen (die Städte mit einender verbinden) besser angebunden als ländliche Gegenden die nicht auf solchen Strecken liegen. -->
 
 Einfärben der Kategorien und Aufgabenträger ist ebenfalls interessant (s. ).
 
@@ -382,7 +382,7 @@ ggplot(data=bahnhof.bundesland) +
 
 ```
 
-Im Vergleich zu @fig-top12 ist es auffällig, dass es deutlich mehr Bahnhöfe der Kategorie 6 als der Kategorie 4 gibt. Generell ist eine stärkere tendenz in Richtung kleinere Bahnhöfe zu erkennen. Dies lässt sich erklären, da die Bahnhöfe nicht nur noch in städtischem Gebiet, sondern auch vermehrt in ländlichem Gebiet liegen. Dies ist dadurch geschuldet, dass nun ein Länderdurchschnitt und kein Stadtdurchschnitt genommen wird. Auch sieht man, dass die drei Stadtstaaten (Berlin, Hamburg und Bremen) im Vergleich zu den anderen Städten eine andere Verteilung der Bahnhöfe haben.
+Im Vergleich zu @fig-top12 ist es auffällig, dass es deutlich mehr Bahnhöfe der Kategorie 6 als der Kategorie 4 gibt. Generell ist eine stärkere Tendenz in Richtung kleinere Bahnhöfe zu erkennen. Dies lässt sich erklären, da die Bahnhöfe nicht nur noch in städtischem Gebiet, sondern auch vermehrt in ländlichem Gebiet liegen. Dies ist dadurch geschuldet, dass nun ein Länderdurchschnitt und kein Stadtdurchschnitt genommen wird. Auch sieht man, dass die drei Stadtstaaten (Berlin, Hamburg und Bremen) im Vergleich zu den anderen Städten eine andere Verteilung der Bahnhöfe haben.
 
 #### Karten auf Bundesländerebene
 
@@ -450,13 +450,13 @@ plot_tripple_comparison(population_density, train_density, population_per_train)
 
 ```
 
-In allen drei Karten stechen die Stadtstaaten herraus. Auch kann man die dritte Karte als Verhältnissdiagramm zu den ersten Beiden ansehen (1: n/population 2: population/area 3: n/area als Verhältniss von 1 und 2). So könnte man aus den ersten Karten geographische Zusammenhänge erahnen, welche durch die dritte Karte revidiert werden. Hierdurch wird die initiale Vermutung bestätigt, dass es Unterschiede zwischen Stadt und Land gibt aber es keiwne klaren unterschiede im Bundesländervergleich gibt. Dies heißt trotzdem nicht, dass es keine Unterschiede gibt und alle Bundesländer gleich aufgestellt sind.
+In allen drei Karten stechen die Stadtstaaten heraus. Auch kann man die dritte Karte als Verhältnisdiagramm zu den ersten Beiden ansehen (1: n/population 2: population/area 3: n/area als Verhältnis von 1 und 2). So könnte man aus den ersten Karten geographische Zusammenhänge erahnen, welche durch die dritte Karte revidiert werden. Hierdurch wird die initiale Vermutung bestätigt, dass es Unterschiede zwischen Stadt und Land gibt aber es keine klaren Unterschiede im Bundesländervergleich gibt. Dies heißt trotzdem nicht, dass es keine Unterschiede gibt und alle Bundesländer gleich aufgestellt sind.
 
 ### Mehr Granularität durch Postleitzahlen
 
 Nachdem im Bundesländervergleich keine markanten Unterschiede erkannt wurde wird nun die Granularität mithilfe von Postleitzahlen(PLZ) erhöht. Dies wird in zwei schritten erledigt. Zuerst werden Gebiete mithilfe der ersten beiden Ziffern in der Postleitzahl gruppiert. Danach wird jede PLZ einzeln betrachtet.
 
-Zunächst müssen die Daten wieder angepasst werden. Hierzu werden die Postleitzahlen nach den ersten beiden Ziffern gruppiert und die Summe aller Einwohner sowie aller Bahnhöfe in diesem Gebiet hinzugefügt. Darauf wird mit *st_area* die Fläche jedes Gebietes aus den Geometriedaten berechnet, welches sehr rechenintensiv ist. Im Amschluss werden wieder drei Karten zur Befölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt.
+Zunächst müssen die Daten wieder angepasst werden. Hierzu werden die Postleitzahlen nach den ersten beiden Ziffern gruppiert und die Summe aller Einwohner sowie aller Bahnhöfe in diesem Gebiet hinzugefügt. Darauf wird mit *st_area* die Fläche jedes Gebietes aus den Geometriedaten berechnet, welches sehr rechenintensiv ist. Im Anschluss werden wieder drei Karten zur Bevölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt.
 
 ```{r}
 #| label: plz-ziffern
