@@ -5,6 +5,9 @@ date: "01.08.2023"
 editor: visual
 format: 
   html:
+    theme:
+      light: flatly
+      dark: darkly
     fig-width: 8
     fig-height: 4
 toc: true
