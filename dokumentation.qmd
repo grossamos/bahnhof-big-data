@@ -293,7 +293,21 @@ Bemerkbar ist: todo text
 
 <!-- warum top12? -->
 
+todo: text einleitung /überleitung
+
 Zur Vorbereitung wird das data frame "bahnhof" nach Orten gruppiert und die Häufigkeit jedes Ortes berechnet. Diese Häufigkeiten werden in einem neuen data frame namens "n.orte" gespeichert und in absteigender Reihenfolge sortiert. Danach wird das data frame "top12" erstellt, indem die Zeilen des ursprünglichen data frames "bahnhof" ausgewählt werden, die sich auf die Top 12 Orte beziehen. Schließlich wird das data frame "top12" mit dem sortierten data frame "n.orte.order" verbunden, um die Häufigkeit jedes Ortes hinzuzufügen. Anschließend wird mit ggplot ein Balkendiagramm erstellt, das die Anzahl der Bahnhöfe in den Top 12 Städten anzeigt und die Bahnhofskategorien farblich unterscheidet.
+
+| Kategorie | Beschreibung                 |
+| --------- | ---------------------------- |
+| 1         | Fernbahnhof (Hbf)            |
+| 2         | Hbf größerer Städte          |
+| 3         | Hbf kleiner/mittleren Städte |
+| 4         | Regionalbahnhof              |
+| 5         | Stadtteilbahnhof             |
+| 6         | Kleiner Bahnhof              |
+| 7         | Sehr kleiner Bahnhof         |
+
+: Beschreibung der Bahnhofskategorien {tbl-colwidths="[25,50]"}
 
 ```{r}
 #| code-fold: true
@@ -345,12 +359,16 @@ München, Frankfurt und Stuttgart haben im Vergleich zu den anderen Städten ver
 
 ### Vergleich auf Bundesländerebene
 
+In diesem Abschnitt werden die Bahnhofsdaten auf Bundesländerebene analysiert. Hierbei werden auch die Daten zur Einwohnerzahl in Betrachtung gezogen.
+
 todo: einleitungstext
 
 todo: barchart daten erklären, 
 
 ```{r}
 #| code-fold: true
+#| label: fig-bar-bundeslander
+#| fig-cap: Bundesländer nach Bahnhöfen
 
 
 n.bundesland = (table(bahnhof$Bundesland))
@@ -373,7 +391,7 @@ ggplot(data=bahnhof.bundesland) +
   ) + 
   labs(
     y = "Anzahl Bahnhöfe",
-    title = "Top Bundesländer nach Bahnhöfen",
+    title = "Bundesländer nach Bahnhöfen",
     fill = "Bahnhofskategorie"
   ) +
   scale_fill_manual(values = c(
