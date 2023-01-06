@@ -221,6 +221,18 @@ Einfärben der Kategorien und Aufgabenträger ist ebenfalls interessant (s. ).
 
 Im Datensatz sind die Stationen des Datensatzes in sieben Bahnhofskategorien aufgeteilt. Bahnhöfe werden nach angebotenen Leistungsmerkmalen, wie bspw. dem Vorhandensein technischer Stufenfreiheit, Service-Personal oder der Größe des Bahnhofs nach Anzahl der Reisenden/Zughalten kategorisiert. Bahnhöfe der Kategorie 1 verfügen über die größte und leistungsstärkste Infrastruktur und sind häufig als Hauptbahnhöfe in Großstädten zu finden. Bahnhöfe der Kategorie 7 hingegen besitzen sehr einfache bzw. geringe Infrastruktur und werden nur wenig frequentiert. [^9]
 
+| Kategorie | Beschreibung                 |
+|-----------|------------------------------|
+| 1         | Fernbahnhof (Hbf)            |
+| 2         | Hbf größerer Städte          |
+| 3         | Hbf kleiner/mittleren Städte |
+| 4         | Regionalbahnhof              |
+| 5         | Stadtteilbahnhof             |
+| 6         | Kleiner Bahnhof              |
+| 7         | Sehr kleiner Bahnhof         |
+: Beschreibung der Bahnhofskategorien {tbl-colwidths="\[25,50\]"}
+
+
 [^9]: Deutsche Bahn, "Die sieben Bahnhofskategorien", <https://web.archive.org/web/20130417011010/http://www.deutschebahn.com/de/geschaefte/infrastruktur/bahnhof/bahnhofs_kategorien.html>, 2012
 
 In @fig-colored-station-map wird die Karte der Bahnstationen im bezug auf diese Kategorien eingefärbt. Der Transparenzeffekt soll dazu dienen die dominanten Farben in Clustern ersichtlich zu machen.
@@ -247,6 +259,7 @@ ggplot() +
 
 Besonders im Vergleich der Größeren Städte fällt auf, dass nicht alle Bahnhofscluster gleich eingefärbt sind. So ist bspw. Stuttgart grün (Kategorie 3), Nürnberg rot (Kategorie 5) und München gelb (Kategorie 4). Im Umkehrschluss bedeutet das, dass bestimmte Städte bessere und kostenintensivere Bahnhofsinfrastruktuktur erhalten als andere (mehr dazu in @sec-bahnhofsanzahl).
 
+Insbesonderem Stuttgart fällt als am Stadt mit den höchst Kategorisierten Bahnstationen auf (s. @fig-colored-station-map).
 Eine potentielle Ursache wird bei Betrachtung der Aufgabenträger ersichtlich (s. @fig-colored-station-map-responsible). Ähnlich wie in @fig-colored-station-map wird hierbei die Karte eingefärbt, da es zu keinen Überlappungen kommt kann hier auf den Transparenzwert verzichtet werden.
 
 ```{r}
@@ -265,32 +278,17 @@ ggplot() +
   bahn_map_theme
 ```
 
-Bemerkbar ist: todo text
-
--   städte haben cluster an categorie 4
--   stuttgart hat als einzige stadt cat 3 -\> wgn unterschiedlichem verkerhrsbund (s. discord für quelle und erklärung)
--   ländliche gegenden haben cat 5-7 =\> folglich schlechtere bahnhöfe
--   wesentlich höherer cat 7 anteil im Norden! -\> Benötigt evtl. anderen Graphen
+Im Gegensatz zu Bundesländern wie Bayern, Thüringen oder Sachsen-Anhalt hat Baden Württemberg einen seperaten Aufgabenträger für seine Hauptstadt.
+Aufgabenträger finanzieren Bahninfrastruktur, Stationen und Bahnlinien.
+Somit beinflussen Aufgabenträger auch die Leistungen eines Bahnhofs, die die dessen Kategorie bestimmen.
+Eine Trennung von Aufgabenträgern in Baden Württemberg und Stuttgart könnte zu disproportionalen Finanzierungsmitteln führen und so Stuttgart ermöglicht haben bessere Bahnhöfe zu bauen.
+<!-- An Beispielen wie Dresdenn zeigt sich jedoch, dass eine solche Trennung nicht zwangshaft zu der eben vermuteten disproportionalen Finanzierung führen muss. -->
 
 ### Top 12 Städte nach Bahnhofanzahl {#sec-bahnhofsanzahl}
 
-<!-- warum top12? -->
+Um zu überprüfen, ob die in @fig-colored-station-map festgestellten Unterschiede zwischen Städten auch tatsächlich vorkommen und nicht bspw. aufgrund der Farbwahl in der Karte erscheinen, wird die Verteilung der Kategorien in den 12 größten deutschen Städten näher betrachtet.
 
-todo: text einleitung /überleitung
-
-Zur Vorbereitung wird das data frame "bahnhof" nach Orten gruppiert und die Häufigkeit jedes Ortes berechnet. Diese Häufigkeiten werden in einem neuen data frame namens "n.orte" gespeichert und in absteigender Reihenfolge sortiert. Danach wird das data frame "top12" erstellt, indem die Zeilen des ursprünglichen data frames "bahnhof" ausgewählt werden, die sich auf die Top 12 Orte beziehen. Schließlich wird das data frame "top12" mit dem sortierten data frame "n.orte.order" verbunden, um die Häufigkeit jedes Ortes hinzuzufügen. Anschließend wird mit ggplot ein Balkendiagramm erstellt, das die Anzahl der Bahnhöfe in den Top 12 Städten anzeigt und die Bahnhofskategorien farblich unterscheidet. Es wird die gleiche Farbpallette wie in TODO fig oben und @fig-bar-bundeslander verwendet.
-
-| Kategorie | Beschreibung                 |
-|-----------|------------------------------|
-| 1         | Fernbahnhof (Hbf)            |
-| 2         | Hbf größerer Städte          |
-| 3         | Hbf kleiner/mittleren Städte |
-| 4         | Regionalbahnhof              |
-| 5         | Stadtteilbahnhof             |
-| 6         | Kleiner Bahnhof              |
-| 7         | Sehr kleiner Bahnhof         |
-
-: Beschreibung der Bahnhofskategorien {tbl-colwidths="\[25,50\]"}
+Zur Vorbereitung wird das data frame `bahnhof` nach Orten gruppiert und die Häufigkeit jedes Ortes berechnet. Diese Häufigkeiten werden in einem neuen data frame namens `n.orte` gespeichert und in absteigender Reihenfolge sortiert. Danach wird das data frame `top12` erstellt, indem die Zeilen des ursprünglichen data frames `bahnhof` ausgewählt werden, die sich auf die Top 12 Orte beziehen. Schließlich wird das data frame `top12` mit dem sortierten data frame `n.orte.order` verbunden, um die Häufigkeit jedes Ortes hinzuzufügen. Anschließend wird mit ggplot ein Balkendiagramm erstellt, das die Anzahl der Bahnhöfe in den Top 12 Städten anzeigt und die Bahnhofskategorien farblich unterscheidet. Es wird die gleiche Farbpallette wie in @fig-colored-station-map und @fig-bar-bundeslander verwendet.
 
 ```{r}
 #| code-fold: true
@@ -335,7 +333,10 @@ An @fig-top12 lassen sich folgende Erkenntnisse ableiten:
 
 Berlin hat im Vergleich zu den anderen Städten deutlich mehr Bahnhöfe. Dies könnte darauf hindeuten, dass das gesamte Gebiet als Adresse "Berlin" geführt wird, wodurch die Anzahl der Bahnhöfe in der Stadt scheinbar überdurchschnittlich hoch ist.
 
-München, Frankfurt und Stuttgart haben im Vergleich zu den anderen Städten verhältnismäßig mehr Bahnhöfe der Kategorie 3. Dies ist auch in Figure @fig-colored-station-map sichtbar, da hier in der rechten Karte mit leicht transparenten Punkten in diesen Städten die Kategorie 3 deutlich ausgeprägter ist.
+Frankfurt und Stuttgart haben im Vergleich zu den anderen Städten verhältnismäßig mehr Bahnhöfe der Kategorie 3. 
+München, Berlin und Hamburg haben verhältnismäßig den höchten Anteil an Bahnhöfen der Kategorie 4, während Düsseldorf, Nürnberg und Dresden die höchsten Anteile an Bahnhöfen der Kategorie 5 besitzen.
+Die in @fig-colored-station-map sichtbaren Schwerpunkte lassen sich daher bestätigen.
+Bezüglich der Fragestellung lässt sich aussagen, das die Kategorien der Bahnhöfe zwischen Städen ungleichmäßig verteilt sind. 
 
 ### Vergleich auf Bundesländerebene
 
