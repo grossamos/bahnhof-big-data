@@ -452,32 +452,24 @@ bahnhof %>%
 ```
 
 #### Top 10 Städte nach Bahnhofanzahl
-todo: 
-* top 10 städte nach anzahl bahnhöfe (barchart) (zusätzlich aufteilung in kategorien)
+
 
 ```{r}
 t = (table(bahnhof$Ort))
 t.order = as.data.frame(t[order(t, decreasing = T)])
 
-t.order
-t.order[1:12,]$Var1
-filter(bahnhof, Ort %in% t.order[1:12,]$Var1)
-
-str(bahnhof)
-
-
 top10 = filter(bahnhof, Ort %in% t.order[1:12,]$Var1)
 
 top10 <- top10 %>% left_join(t.order, by = c("Ort" = "Var1")) 
 
-# TODO order
+# TODO colormatching
 
 ggplot(data=top10) +
   geom_bar(
     aes(
-      x=reorder(Ort, Freq, decreasing = T), fill=`Kat. Vst`)
-    ,
-    #stat="identity"
+      x=reorder(Ort, Freq, decreasing = T), 
+      fill=`Kat. Vst`
+    )
   ) + 
   theme(
     axis.title.x = element_blank(),
@@ -485,12 +477,41 @@ ggplot(data=top10) +
   ) + 
   labs(
     y = "Anzahl Bahnhöfe",
-    title = "Top 10 Städte nach Bahnhöfen",
+    title = "Top 12 Städte nach Bahnhöfen",
     fill = "Bahnhofskategorie"
   )
 
 
 ```
+
+```{r}
+t = (table(bahnhof$Bundesland))
+t.order = as.data.frame(t[order(t, decreasing = T)])
+
+top10 = filter(bahnhof, Bundesland %in% t.order$Var1)
+top10 <- top10 %>% left_join(t.order, by = c("Bundesland" = "Var1")) 
+
+# TODO colormatching
+
+ggplot(data=top10) +
+  geom_bar(
+    aes(
+      x=reorder(Bundesland, Freq, decreasing = T), 
+      fill=`Kat. Vst`
+    )
+  ) + 
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(angle = -20, hjust = 0)
+  ) + 
+  labs(
+    y = "Anzahl Bahnhöfe",
+    title = "Top Bundesländer nach Bahnhöfen",
+    fill = "Bahnhofskategorie"
+  )
+
+```
+
 
 
 #### eventuel?: gleiches barchart aber mit bundesländern
