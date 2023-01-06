@@ -40,6 +40,8 @@ library(ggmap)
 library(broom)
 library(sf)
 library(cowplot)
+library(reshape2)
+library(RColorBrewer)
 ```
 
 #### Stationsdatensatz
@@ -285,144 +287,190 @@ german_states_weighted <- left_join(
   by = c("name_1" = "Bundesland")
 )
 
+heatmap_theme <- bahn_map_theme +
+  theme(legend.position = "bottom", legend.title=element_blank())
+
+population_per_train_theme <- scale_fill_gradient(trans = "log", labels = c(0.0001, 0.00005), breaks = c(0.0001, 0.00005)) 
 
 # Heatmap of station density
 population_per_train <- ggplot(data = german_states_weighted) +
   geom_sf(
     aes(fill = n/population)
   ) +
-  scale_fill_gradient(trans = "log", labels = c(0.00001, 0.0001), breaks = c(0.00001, 0.0001)) +
-  bahn_map_theme +
-  theme(legend.position = "bottom", legend.title=element_blank())
+  heatmap_theme +
+  population_per_train_theme
 
-population_per_train
+population_density_theme <- scale_fill_gradient(trans = "log", labels = c(150, 500, 2000), breaks = c(150, 500, 2000))
 
 population_density <- ggplot(data = german_states_weighted) +
   geom_sf(
     aes(fill = population/area)
   ) +
-  scale_fill_gradient(trans = "log") +
-  bahn_map_theme +
-  theme(legend.position = "bottom", legend.title=element_blank())
+  heatmap_theme +
+  population_density_theme
+
+train_density_theme <- scale_fill_gradient(trans = "log", labels = c(0.01, 0.02, 0.5, 0.1), breaks = c(0.01, 0.02, 0.05, 0.1))
 
 train_density <- ggplot(data = german_states_weighted) +
   geom_sf(
     aes(fill = n/area)
   ) +
-  scale_fill_gradient(trans = "log", labels = c(0.01, 0.02, 0.5, 0.1), breaks = c(0.01, 0.02, 0.05, 0.1)) +
-  bahn_map_theme +
-  theme(legend.position = "bottom", legend.title=element_blank()) 
+  heatmap_theme +
+  train_density_theme
 
-plot_grid(population_density, train_density, population_per_train, nrow = 1, labels = c("Bevölkerungsdichte", "Bahnhofdichte (1/qkm)", "Bahnhof pro Person"), hjust = 0)
+plot_tripple_comparison <- function(population_density, train_density, population_per_train) {
+  plot_grid(population_density, train_density, population_per_train, nrow = 1, labels = c("Bevölkerungsdichte", "Bahnhofdichte (1/qkm)", "Bahnhof pro Person"), hjust = 0)  
+}
+
+plot_tripple_comparison(population_density, train_density, population_per_train)
+
 ```
 
-<!-- ### erste 2 ziffern plz (todo) -->
+### erste 2 ziffern plz (todo)
 
-<!-- ```{r} -->
-<!-- #| output: false -->
+```{r}
+#| output: false
 
-<!--  -->
+german_plz_weighted <- left_join(
+  german_plz,
+  bahnhof %>%
+    count(PLZ) %>%
+    replace_na(list(n = 0)),
+  by = c("plz" = "PLZ")
+)
+```
 
-<!-- german_plz_weighted <- left_join( -->
-<!--   german_plz, -->
-<!--   bahnhof %>% -->
-<!--     count(PLZ) %>% -->
-<!--     replace_na(list(n = 0)), -->
-<!--   by = c("plz" = "PLZ") -->
-<!-- ) -->
-<!-- ``` -->
+```{r}
+grouped_plz <- german_plz_weighted %>%
+  mutate(leitgruppe = substring(plz, 1, 2)) %>%
+  group_by(leitgruppe) %>%
+  summarise(
+    einwohner = sum(einwohner),
+    bahnhof_num = sum(n, na.rm = T)
+  )
 
-<!-- ```{r} -->
-<!-- grouped_plz <- german_plz_weighted %>% -->
-<!--   mutate(leitgruppe = substring(plz, 1, 2)) %>% -->
-<!--   group_by(leitgruppe) %>% -->
-<!--   summarise( -->
-<!--     einwohner = sum(einwohner), -->
-<!--     bahnhof_num = sum(n) -->
-<!--   ) -->
+grouped_plz$qkm <- st_area(grouped_plz)
+grouped_plz <- grouped_plz %>% mutate(qkm = as.numeric(qkm))
 
-<!-- grouped_plz$qkm <- st_area(grouped_plz) -->
+population_per_train <- ggplot(grouped_plz) +
+  geom_sf(aes(fill = einwohner/bahnhof_num)) +
+  scale_fill_gradient(trans = "log", labels = c(10000, 25000, 50000), breaks = c(10000, 25000, 50000)) +
+  heatmap_theme
 
-<!-- ggplot(grouped_plz) + -->
-<!--   geom_sf(aes(fill = qkm))  -->
-<!-- ``` -->
+population_density <- ggplot(grouped_plz) +
+  geom_sf(aes(fill = einwohner/qkm)) +
+  scale_fill_gradient(trans = "log", labels = c(0.0001, 0.001, 0.005), breaks = c(0.0001, 0.001, 0.005)) +
+  heatmap_theme
+population_density
 
+train_density <- ggplot(grouped_plz) +
+  geom_sf(aes(fill = bahnhof_num/qkm)) +
+  scale_fill_gradient(trans = "log", labels = c(4e-09, 1e-08, 3e-07), breaks = c(4e-09, 5e-08, 3e-07)) +
+  heatmap_theme
+train_density
 
-<!-- ### Mehr Granularität durch Postleitzahlen: -->
-
-<!-- Datentransformation: -->
-<!-- ```{r} -->
-<!-- #| output: false -->
-
-<!-- german_plz_weighted <- german_plz_weighted %>% -->
-<!--   mutate( -->
-<!--     ratio1 = einwohner/n, -->
-<!--     ratio2 = einwohner/qkm, -->
-<!--     ratio3 = n/qkm, -->
-<!--   ) %>% -->
-<!--   replace_na(list(n = 0, ratio1 = 0, ratio2 = 0, ratio3 = 0)) -->
-
-<!-- # TODO (obersten 2 sind flughäfen) -->
-<!-- # german_plz_weighted %>% arrange((ratio2)) -->
-<!-- ``` -->
-
-<!-- Plotting: -->
-<!-- ```{r} -->
-<!-- #| warning: false -->
-
-<!-- # wir sehen wesentlich breiteren ausbau im osten (mehr plz haben bahnhöfe) -->
-<!-- p1 <- ggplot(data = german_plz_weighted) + -->
-<!--   geom_sf( -->
-<!--     aes(fill = ratio1),  -->
-<!--     linewidth = 0.01 -->
-<!--   ) + -->
-<!--   scale_fill_gradient(name = "Bevölkerung pro Bahnhof", trans = "log") + -->
-<!--   theme(legend.position = "bottom") -->
-
-<!-- p2 <- ggplot(data = german_plz_weighted) + -->
-<!--   geom_sf( -->
-<!--     aes(fill = ratio2),  -->
-<!--     linewidth = 0.01 -->
-<!--   ) + -->
-<!--   scale_fill_gradient(name = "Bevölkerungsdichte", trans = "log") + -->
-<!--   theme(legend.position = "bottom") -->
-
-<!-- p3 <- ggplot(data = german_plz_weighted) + -->
-<!--   geom_sf( -->
-<!--     aes(fill = ratio3),  -->
-<!--     linewidth = 0.01 -->
-<!--   ) + -->
-<!--   scale_fill_gradient(name = "Bahnhofsdichte", trans = "log") + -->
-<!--   theme(legend.position = "bottom") -->
-
-<!-- plot_grid(p2, p3, p1, nrow = 1) -->
-<!-- ``` -->
+plot_tripple_comparison(population_density, train_density, population_per_train)
+```
 
 
+### Mehr Granularität durch Postleitzahlen:
 
-<!-- ## Normale Diagramme -->
+Datentransformation:
+```{r}
+#| output: false
+
+german_plz_weighted <- german_plz_weighted %>%
+  mutate(
+    ratio1 = einwohner/n,
+    ratio2 = einwohner/qkm,
+    ratio3 = n/qkm,
+  ) %>%
+  replace_na(list(n = 0, ratio1 = 0, ratio2 = 0, ratio3 = 0))
+
+# TODO (obersten 2 sind flughäfen)
+# german_plz_weighted %>% arrange((ratio2))
+```
+
+Plotting:
+```{r}
+#| warning: false
+
+# wir sehen wesentlich breiteren ausbau im osten (mehr plz haben bahnhöfe)
+p1 <- ggplot(data = german_plz_weighted) +
+  geom_sf(
+    aes(fill = ratio1),
+    linewidth = 0.01
+  ) +
+  scale_fill_gradient(name = "Bevölkerung pro Bahnhof", trans = "log") +
+  theme(legend.position = "bottom")
+
+p2 <- ggplot(data = german_plz_weighted) +
+  geom_sf(
+    aes(fill = ratio2),
+    linewidth = 0.01
+  ) +
+  scale_fill_gradient(name = "Bevölkerungsdichte", trans = "log") +
+  theme(legend.position = "bottom")
+
+p3 <- ggplot(data = german_plz_weighted) +
+  geom_sf(
+    aes(fill = ratio3),
+    linewidth = 0.01
+  ) +
+  scale_fill_gradient(name = "Bahnhofsdichte", trans = "log") +
+  theme(legend.position = "bottom")
+
+plot_grid(p2, p3, p1, nrow = 1)
+```
+
+## Versuch auf einem Grid
+
+```{r}
+germany_matrix <- matrix(rep(0, 200*200), nrow = 200, ncol = 200)
+
+# Dim: 5.5-15.5 x 46-56
+
+# we need it to be sequential
+for(x in 1:nrow(stations_geo_loc)) {
+  lon <- round((stations_geo_loc[x, "lon"] - 5.5) * 20)[1, 1]
+  lat <- round((stations_geo_loc[x, "lat"] - 46) * 20)[1, 1]
+  germany_matrix[lon, lat] <- germany_matrix[lon, lat] + 1
+}
+
+germany_df <- melt(germany_matrix, c("x", "y"), value.name = "z")
+
+color_palette <- brewer.pal(11, "Blues")
+color_palette[1] <- "#FFFFFF"
+
+ggplot(germany_df, aes(x, y, fill =z)) +
+  geom_tile() 
+
+```
 
 
-<!-- ### Boxplot  -->
-<!-- im vergleich zu oben -->
-<!-- ```{r} -->
-
-<!-- ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) + -->
-<!--   geom_boxplot(aes(x = n, y = einwohner, fill = n, group = n)) -->
-
-<!-- # ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) + -->
-<!-- #   geom_violin(aes(x = n, y = einwohner, fill = n, group = n)) -->
-<!-- ``` -->
+## Normale Diagramme
 
 
-<!-- ### Fun fact -->
+### Boxplot
+im vergleich zu oben
+```{r}
 
-<!-- dieser Prozentsatz an Bahnhöfen ist in einer Bahnhofstraße, Bahnhofallee, etc. -->
-<!-- ```{r} -->
-<!-- bahnhof %>% -->
-<!--   filter(grepl("Bahnhof", Straße)) %>% -->
-<!--   count(.) / nrow(bahnhof) -->
-<!-- ``` -->
+ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
+  geom_boxplot(aes(x = n, y = einwohner, fill = n, group = n))
+
+# ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
+#   geom_violin(aes(x = n, y = einwohner, fill = n, group = n))
+```
+
+
+### Fun fact
+
+dieser Prozentsatz an Bahnhöfen ist in einer Bahnhofstraße, Bahnhofallee, etc.
+```{r}
+bahnhof %>%
+  filter(grepl("Bahnhof", Straße)) %>%
+  count(.) / nrow(bahnhof)
+```
 
 <!-- todo:  -->
 <!-- * top 10 städte nach anzahl bahnhöfe (barchart) (zusätzlich aufteilung in kategorien) -->

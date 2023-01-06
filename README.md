@@ -14,6 +14,8 @@
 - Auftraggeber und Verkehrsbund vergleichen (einfach nochmal einen Graphen zu verkehrsbund machen)
 - Kategorieverteilung je Bundesland
 
+- verteilung von bevölkerung und fläche zwischen bundesländern auf plz, ziffern und bundesebene unterschiedlich ist
+
 Fun facts:
 
 - Wie viele Bahnhöfe sind in der Bahnhofstraße
