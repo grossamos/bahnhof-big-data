@@ -451,7 +451,11 @@ plot_tripple_comparison(population_density, train_density, population_per_train)
 ```
 
 In allen drei Karten stechen die Stadtstaaten heraus. 
-Auch kann man die dritte Karte als Verhältnisdiagramm zu den ersten Beiden ansehen (1: n/population 2: population/area 3: n/area als Verhältnis von 1 und 2).
+Auch kann man die dritte Karte als Verhältnisdiagramm zu den ersten Beiden ansehen:
+$$
+1: \frac{n}{population} \hspace{1cm} 2: \frac{population}{area} \hspace{1cm}  3: \frac{n}{area}
+$$
+(1: n/population 2: population/area 3: n/area als Verhältnis von 1 und 2).
 Es ist ein Trennlinie zwischen den alten und neuen Bundesländern zu erahnen.
 Die neuen Bundesländer scheinen im schnitt mehr Bahnhöfe pro Person zu haben als die alten.  
 
