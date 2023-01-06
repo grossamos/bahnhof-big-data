@@ -307,9 +307,6 @@ top12 = filter(bahnhof, Ort %in% n.orte.order[1:12,]$Var1)
 
 top12 <- top12 %>% left_join(n.orte.order, by = c("Ort" = "Var1")) 
 
-# TODO colormatching
-
-
 ggplot(data=top12) +
   geom_bar(
     aes(
@@ -325,7 +322,16 @@ ggplot(data=top12) +
     y = "Anzahl Bahnhöfe",
     title = "Top 12 Städte nach Bahnhöfen",
     fill = "Bahnhofskategorie"
-  )
+  ) +
+  scale_fill_manual(values = c(
+    "black", # Fernbahnof (Hbf)
+    "blue", # Hbf größerer Städte
+    "green", # Hbf kleiner/mittleren städten
+    "yellow2", # regionalbahnhof
+    "orangered", # stadtteilbahnhof
+    "orange", # landbahnof
+    "pink" # ultra landbahnhof
+  ))
 
 ```
 
@@ -369,7 +375,16 @@ ggplot(data=bahnhof.bundesland) +
     y = "Anzahl Bahnhöfe",
     title = "Top Bundesländer nach Bahnhöfen",
     fill = "Bahnhofskategorie"
-  )
+  ) +
+  scale_fill_manual(values = c(
+    "black", # Fernbahnof (Hbf)
+    "blue", # Hbf größerer Städte
+    "green", # Hbf kleiner/mittleren städten
+    "yellow2", # regionalbahnhof
+    "orangered", # stadtteilbahnhof
+    "orange", # landbahnof
+    "pink" # ultra landbahnhof
+  ))
 
 ```
 
