@@ -436,7 +436,7 @@ p3 <- ggplot(data = german_plz_weighted) +
 plot_grid(p2, p3, p1, nrow = 1)
 ```
 
-## Versuch auf einem Grid
+### Versuch auf einem Grid
 
 ```{r}
 germany_matrix <- matrix(rep(0, 200*200), nrow = 200, ncol = 200)
@@ -461,35 +461,8 @@ ggplot(germany_df, aes(x, y, fill =z)) +
 ```
 
 
-### Weitere Diagramme
 
-todo: braucht german_plz_weighted von oben
-<!-- ### Boxplot -->
-<!-- im vergleich zu oben -->
-<!-- ```{r} -->
-<!-- ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) + -->
-<!--   geom_boxplot(aes(x = n, y = einwohner, fill = n, group = n)) -->
-<!-- # ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) + -->
-<!-- #   geom_violin(aes(x = n, y = einwohner, fill = n, group = n)) -->
-<!-- ``` -->
-
-
-
-### Fun facts
-Folgende Erkenntnisse passen nicht ganz zur Fragestellung, sind aber dennoch interessant.
-
-
-#### Prozentsatz an Bahnhöfen mit "Bahnhof" in Adresse
-Folgender Prozentsatz an Bahnhöfen ist an einer Adresse mit "Bahnhof":
-```{r}
-#| code-fold: true
-
-bahnhof %>%
-  filter(grepl("Bahnhof", Straße)) %>%
-  count(.) / nrow(bahnhof)
-```
-
-#### Top 12 Städte nach Bahnhofanzahl
+### Top 12 Städte nach Bahnhofanzahl
 
 <!-- warum top12? -->
 
@@ -536,7 +509,7 @@ Berlin hat im Vergleich zu den anderen Städten deutlich mehr Bahnhöfe. Dies k�
 
 München, Frankfurt und Stuttgart haben im Vergleich zu den anderen Städten verhältnismäßig mehr Bahnhöfe der Kategorie 3. Dies ist auch in Figure @fig-colored-station-map sichtbar, da hier in der rechten Karte mit leicht transparenten Punkten in diesen Städten die Kategorie 3 deutlich ausgeprägter ist.
 
-#### Bundesländer nach Bahnhofskategorien
+### Bundesländer nach Bahnhofskategorien
 
 ```{r}
 #| code-fold: true
@@ -568,6 +541,37 @@ ggplot(data=bahnhof.bundesland) +
 
 ```
 
+
+
+
+### Weitere Diagramme
+
+todo: braucht german_plz_weighted von oben
+<!-- ### Boxplot -->
+<!-- im vergleich zu oben -->
+<!-- ```{r} -->
+<!-- ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) + -->
+<!--   geom_boxplot(aes(x = n, y = einwohner, fill = n, group = n)) -->
+<!-- # ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) + -->
+<!-- #   geom_violin(aes(x = n, y = einwohner, fill = n, group = n)) -->
+<!-- ``` -->
+
+
+
+### Fun facts
+Folgende Erkenntnisse passen nicht ganz zur Fragestellung, sind aber dennoch interessant.
+
+
+#### Prozentsatz an Bahnhöfen mit "Bahnhof" in Adresse
+Folgender Prozentsatz an Bahnhöfen ist an einer Adresse mit "Bahnhof": `r bahnhof %>% filter(grepl("Bahnhof", Straße)) %>% count(.) / nrow(bahnhof)`%
+```{r}
+#| code-fold: true
+#| output: false
+
+bahnhof %>%
+  filter(grepl("Bahnhof", Straße)) %>%
+  count(.) / nrow(bahnhof)
+```
 
 
 ## Fazit !TODO!
