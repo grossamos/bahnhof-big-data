@@ -295,7 +295,7 @@ Bemerkbar ist: todo text
 
 todo: text einleitung /überleitung
 
-Zur Vorbereitung wird das data frame "bahnhof" nach Orten gruppiert und die Häufigkeit jedes Ortes berechnet. Diese Häufigkeiten werden in einem neuen data frame namens "n.orte" gespeichert und in absteigender Reihenfolge sortiert. Danach wird das data frame "top12" erstellt, indem die Zeilen des ursprünglichen data frames "bahnhof" ausgewählt werden, die sich auf die Top 12 Orte beziehen. Schließlich wird das data frame "top12" mit dem sortierten data frame "n.orte.order" verbunden, um die Häufigkeit jedes Ortes hinzuzufügen. Anschließend wird mit ggplot ein Balkendiagramm erstellt, das die Anzahl der Bahnhöfe in den Top 12 Städten anzeigt und die Bahnhofskategorien farblich unterscheidet.
+Zur Vorbereitung wird das data frame "bahnhof" nach Orten gruppiert und die Häufigkeit jedes Ortes berechnet. Diese Häufigkeiten werden in einem neuen data frame namens "n.orte" gespeichert und in absteigender Reihenfolge sortiert. Danach wird das data frame "top12" erstellt, indem die Zeilen des ursprünglichen data frames "bahnhof" ausgewählt werden, die sich auf die Top 12 Orte beziehen. Schließlich wird das data frame "top12" mit dem sortierten data frame "n.orte.order" verbunden, um die Häufigkeit jedes Ortes hinzuzufügen. Anschließend wird mit ggplot ein Balkendiagramm erstellt, das die Anzahl der Bahnhöfe in den Top 12 Städten anzeigt und die Bahnhofskategorien farblich unterscheidet. Es wird die gleiche Farbpallette wie in TODO fig oben und @fig-bar-bundeslander verwendet.
 
 | Kategorie | Beschreibung                 |
 | --------- | ---------------------------- |
@@ -314,10 +314,10 @@ Zur Vorbereitung wird das data frame "bahnhof" nach Orten gruppiert und die Häu
 #| label: fig-top12
 #| fig-cap: Top 12 Städte nach Bahnhöfen
 
-n.orte = (table(bahnhof$Ort))
-n.orte.order = as.data.frame(n.orte[order(n.orte, decreasing = T)])
+n.orte <- (table(bahnhof$Ort))
+n.orte.order <- as.data.frame(n.orte[order(n.orte, decreasing = T)])
 
-top12 = filter(bahnhof, Ort %in% n.orte.order[1:12,]$Var1)
+top12 <- filter(bahnhof, Ort %in% n.orte.order[1:12,]$Var1)
 
 top12 <- top12 %>% left_join(n.orte.order, by = c("Ort" = "Var1")) 
 
@@ -334,7 +334,6 @@ ggplot(data=top12) +
   ) + 
   labs(
     y = "Anzahl Bahnhöfe",
-    title = "Top 12 Städte nach Bahnhöfen",
     fill = "Bahnhofskategorie"
   ) +
   scale_fill_manual(values = c(
@@ -361,9 +360,8 @@ München, Frankfurt und Stuttgart haben im Vergleich zu den anderen Städten ver
 
 In diesem Abschnitt werden die Bahnhofsdaten auf Bundesländerebene analysiert. Hierbei werden auch die Daten zur Einwohnerzahl in Betrachtung gezogen.
 
-todo: einleitungstext
+Zunächst wird ein ähnliches Diagramm zu @fig-top12 erstellt mit dem unterschied, dass hier nach Bundesländern gruppiert wird. Somit ist die Datenmanipulation für diesen Teil auch sehr ähnlich.
 
-todo: barchart daten erklären, 
 
 ```{r}
 #| code-fold: true
@@ -371,12 +369,11 @@ todo: barchart daten erklären,
 #| fig-cap: Bundesländer nach Bahnhöfen
 
 
-n.bundesland = (table(bahnhof$Bundesland))
-n.bundesland.order = as.data.frame(n.bundesland[order(n.bundesland, decreasing = T)])
+n.bundesland <- (table(bahnhof$Bundesland))
+n.bundesland.order <- as.data.frame(n.bundesland[order(n.bundesland, decreasing = T)])
 
 bahnhof.bundesland <- bahnhof %>% left_join(n.bundesland.order, by = c("Bundesland" = "Var1")) 
 
-# TODO colormatching
 
 ggplot(data=bahnhof.bundesland) +
   geom_bar(
@@ -391,7 +388,6 @@ ggplot(data=bahnhof.bundesland) +
   ) + 
   labs(
     y = "Anzahl Bahnhöfe",
-    title = "Bundesländer nach Bahnhöfen",
     fill = "Bahnhofskategorie"
   ) +
   scale_fill_manual(values = c(
@@ -406,16 +402,20 @@ ggplot(data=bahnhof.bundesland) +
 
 ```
 
-todo: barchart fazit
+Im Vergleich zu @fig-top12 ist es auffällig, dass es deutlich mehr Bahnhöfe der Kategorie 6 als der Kategorie 4 gibt. Generell ist eine stärkere tendenz in Richtung kleinere Bahnhöfe zu erkennen. Dies lässt sich erklären, da die Bahnhöfe nicht nur noch in städtischem Gebiet, sondern auch vermehrt in ländlichem Gebiet liegen. Dies ist dadurch geschuldet, dass nun ein Länderdurchschnitt und kein Stadtdurchschnitt genommen wird. Auch sieht man, dass die drei Stadtstaaten (Berlin, Hamburg und Bremen) im Vergleich zu den anderen Städten eine andere Verteilung der Bahnhöfe haben.
 
 
 
 
+#### Karten auf Bundesländerebene
 
-Vergleich auf Bundesländerebene:
+In diesem Abschnitt werden nun weitere Bundesländerdaten (wie Einwohner und Fläche) zur Analyse hinzugefügt.
 
-todo: text datenmanipulation
+
+Hierzu wird dem Dataframe *german_states* die Anzahl der Bahnhöfe in diesem Bundesland hinzugefügt. Darauf werden 3 Karten zur Befölkerungsdichte, Bahnhofsdichte und Anzahl Bahnhöfe pro Person erstellt. Diese werden nebeneinander angezeigt um die verschiedenen Daten gut vergleichen zu können.
 ```{r}
+#| code-fold: true
+
 german_states_weighted <- left_join(
   german_states,
   bahnhof %>%
@@ -462,7 +462,7 @@ plot_tripple_comparison(population_density, train_density, population_per_train)
 
 ```
 
-todo: fazit/erkentnisse
+In allen drei Karten stechen die Stadtstaaten herraus. Auch kann man die dritte Karte als Verhältnissdiagramm zu den ersten Beiden ansehen (1: n/population 2: population/area 3: n/area als Verhältniss von 1 und 2). So könnte man aus den ersten Karten geographische Zusammenhänge erahnen, welche durch die dritte Karte revidiert werden. Hierdurch wird die initiale Vermutung bestätigt, dass es Unterschiede zwischen Stadt und Land gibt aber es keine klaren unterschiede im Bundesländervergleich gibt. Dies heißt trotzdem nicht, dass es keine Unterschiede gibt und alle Bundesländer gleich aufgestellt sind.
 
 
 ### Mehr Granularität durch Postleitzahlen
