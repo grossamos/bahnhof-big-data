@@ -390,7 +390,7 @@ ggplot(data=bahnhof.bundesland) +
 
 Im Vergleich zu @fig-top12 ist es auffällig, dass es deutlich mehr Bahnhöfe der Kategorie 6 als der Kategorie 4 gibt. Generell ist eine stärkere Tendenz in Richtung kleinere Bahnhöfe zu erkennen. Dies lässt sich erklären, da die Bahnhöfe nicht nur noch in städtischem Gebiet, sondern auch vermehrt in ländlichem Gebiet liegen. Dies ist dadurch geschuldet, dass nun ein Länderdurchschnitt und kein Stadtdurchschnitt genommen wird. Auch sieht man, dass die drei Stadtstaaten (Berlin, Hamburg und Bremen) im Vergleich zu den anderen Städten eine andere Verteilung der Bahnhöfe haben.
 
-#### Karten auf Bundesländerebene
+#### Karten auf Bundesländerebene {#sec-map-bundeslander}
 
 In diesem Abschnitt werden nun weitere Bundesländerdaten (wie Einwohner und Fläche) zur Analyse hinzugefügt.
 
@@ -517,26 +517,14 @@ population_per_train <- ggplot(grouped_plz) +
 plot_tripple_comparison(population_density, train_density, population_per_train)
 ```
 
-todo: text erkentnisse
-
-- 3 regionen
-
-Mit diesen drei Karten kann man die vorhergehenden Vermutungen spezifizieren. Es sind nun in der dritten Karte drei Regionen (Ost, Nordwest und Süd) zu erkennen, welche eine unterschiedliche Anzahl an Bahnhöfen pro Person haben.
+Mit diesen drei Karten kann man die vorhergehenden Vermutungen aus @sec-map-bundeslander spezifizieren. Es sind nun in der dritten Karte drei Regionen (Ost, Nordwest und Süd) zu erkennen, welche eine unterschiedliche Anzahl an Bahnhöfen pro Person haben.
 
 #### Aufteilung in einzelne Postleitzahlen
 
-todo?: text einleitung oder schon oben mit drin
-
-Datentransformation:
-
-todo: text datenmanipulation
-
-
-todo: text datenqualität (entfernte entfernung der na's)
-
-Plotting:
+Im letzen Schritt der Analyse mit Karten werden nun die Bereiche in die einzelnen Postleitzahlregionen unterteilt. Hier ergibt sich nun auch die Besonderheit, dass es für einige PLZ keinen Bahnhof gibt. Dennoch muss hier keine weitere Datenmanipulation erfolgen und es kann mit den verarbeiteten Daten aus den vorherigen Schritten gearbeitet werden.
 
 ```{r}
+#| code-fold: true
 #| warning: false
 #| label: fig-plz-tripple-plot
 #| fig-cap: Vergleich auf Ebene einzelner Postleitzahlen
@@ -569,13 +557,8 @@ plot_tripple_comparison(population_density.plz, station_density.plz, population_
 ```
 
 
-Mit dieser feien Granularität sieht man nun, dass die Bahnhofsdichte stark mit der Bevölkerungsdichte zusammenhängt. Jedoch ist das Verhältniss Einwohner pro Bahnhof in Deutschland recht gleichmäßig verteilt. Es gibt keinen großen Unterschied zwischen Land- und Stadtregionen. Dies gilt zumindest an den Postleitzahlen, an welchen es mindestens einen Bahnhof gibt. Erstaunlicherweise hat die Karte der Bahnhofsdichte (und somit auch die Dritte) großflächige Lücken (graue Stellen) an welchen es gar keinen Bahnhof gibt. Dennoch kann man feststellen das die Lücken im Osten des Landes deutlich kleiner sind und es somit in fast jeder PLZ mindestens einen Bahnhof gibt. Dies kann jedoch auch damit zusammenhängen, dass die PLZ-Regionen sehr unterschiedlich groß sind. Mehr dazu in @sec-grid
+Mit dieser feien Granularität sieht man nun, dass die Bahnhofsdichte stark mit der Bevölkerungsdichte zusammenhängt. Jedoch ist das Verhältniss Einwohner pro Bahnhof in Deutschland recht gleichmäßig verteilt. Es gibt keinen großen Unterschied zwischen Land- und Stadtregionen. Dies gilt zumindest an den Postleitzahlen, an welchen es mindestens einen Bahnhof gibt. Erstaunlicherweise hat die Karte der Bahnhofsdichte (und somit auch die Dritte) großflächige Lücken (graue Stellen) an welchen es gar keinen Bahnhof gibt. Dennoch kann man feststellen das die Lücken im Osten des Landes deutlich kleiner sind und es somit in fast jeder PLZ mindestens einen Bahnhof gibt. Dies kann jedoch auch damit zusammenhängen, dass die PLZ-Regionen sehr unterschiedlich groß sind. Mehr dazu in @sec-grid .
 
-todo: text erkenntnisse
-
-- alles gleichmäßig und "gerecht"
-- wir sehen wesentlich breiteren ausbau im osten (mehr plz haben bahnhöfe) (mehr fläche)
-  
 
 ### Bahnhoskategorien nach Einwohner
 
