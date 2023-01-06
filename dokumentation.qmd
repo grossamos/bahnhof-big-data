@@ -412,7 +412,13 @@ Im Vergleich zu @fig-top12 ist es auffällig, dass es deutlich mehr Bahnhöfe de
 In diesem Abschnitt werden nun weitere Bundesländerdaten (wie Einwohner und Fläche) zur Analyse hinzugefügt.
 
 
-Hierzu wird dem Dataframe *german_states* die Anzahl der Bahnhöfe in diesem Bundesland hinzugefügt. Darauf werden 3 Karten zur Befölkerungsdichte, Bahnhofsdichte und Anzahl Bahnhöfe pro Person erstellt. Diese werden nebeneinander angezeigt um die verschiedenen Daten gut vergleichen zu können.
+Hierzu wird dem Dataframe *german_states* die Anzahl der Bahnhöfe in diesem Bundesland hinzugefügt. Darauf werden 3 Karten zur Befölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt. Diese werden nebeneinander angezeigt um die verschiedenen Daten gut vergleichen zu können.
+
+::: {.callout-note}
+In diesen und allen folgenden Karten bis @fig-plz-tripple-plot wird eine logarithmische Scala verwendet, da die Unterschiede nicht erkennbar sind. Dies ist der Fall, da immer wieder einzelne Ausreißer wie Städte oder Stadtstaaten die Skala zu stark beeinflussen. Mit der logarithmischen Skala können somit auch Unterschiede in den restlichen Gebieten erkannt werden.
+:::
+
+
 ```{r}
 #| code-fold: true
 
@@ -455,25 +461,33 @@ train_density <- ggplot(data = german_states_weighted) +
   train_density_theme
 
 plot_tripple_comparison <- function(population_density, train_density, population_per_train) {
-  plot_grid(population_density, train_density, population_per_train, nrow = 1, labels = c("Bevölkerungsdichte", "Bahnhofdichte (1/qkm)", "Bahnhof pro Person"), hjust = 0)  
+  plot_grid(
+    population_density, 
+    train_density, 
+    population_per_train, 
+    nrow = 1, 
+    labels = c("Bevölkerungsdichte(1/km²)", "Bahnhofdichte (1/km²)", "Bahnhöfe pro Person"), 
+    hjust = 0,
+    vjust = 1)  
 }
 
 plot_tripple_comparison(population_density, train_density, population_per_train)
 
 ```
 
-In allen drei Karten stechen die Stadtstaaten herraus. Auch kann man die dritte Karte als Verhältnissdiagramm zu den ersten Beiden ansehen (1: n/population 2: population/area 3: n/area als Verhältniss von 1 und 2). So könnte man aus den ersten Karten geographische Zusammenhänge erahnen, welche durch die dritte Karte revidiert werden. Hierdurch wird die initiale Vermutung bestätigt, dass es Unterschiede zwischen Stadt und Land gibt aber es keine klaren unterschiede im Bundesländervergleich gibt. Dies heißt trotzdem nicht, dass es keine Unterschiede gibt und alle Bundesländer gleich aufgestellt sind.
+In allen drei Karten stechen die Stadtstaaten herraus. Auch kann man die dritte Karte als Verhältnissdiagramm zu den ersten Beiden ansehen (1: n/population 2: population/area 3: n/area als Verhältniss von 1 und 2). So könnte man aus den ersten Karten geographische Zusammenhänge erahnen, welche durch die dritte Karte revidiert werden. Hierdurch wird die initiale Vermutung bestätigt, dass es Unterschiede zwischen Stadt und Land gibt aber es keiwne klaren unterschiede im Bundesländervergleich gibt. Dies heißt trotzdem nicht, dass es keine Unterschiede gibt und alle Bundesländer gleich aufgestellt sind. 
 
 
 ### Mehr Granularität durch Postleitzahlen
 
-todo: text einleitung
+Nachdem im Bundesländervergleich keine markanten Unterschiede erkannt wurde wird nun die Granularität mithilfe von Postleitzahlen(PLZ) erhöht. Dies wird in zwei schritten erledigt. Zuerst werden Gebiete mithilfe der ersten beiden Ziffern in der Postleitzahl gruppiert. Danach wird jede PLZ einzeln betrachtet.
 
-todo: text datenmanipulation & plotting mit erklärung log.scala
+
+Zunächst müssen die Daten wieder angepasst werden. Hierzu werden die Postleitzahlen nach den ersten beiden Ziffern gruppiert und die Summe aller Einwohner sowie aller Bahnhöfe in diesem Gebiet hinzugefügt. Darauf wird mit *st_area* die Fläche jedes Gebietes us den Geometriedaten berechnet, welches sehr rechenintensiv ist. Im Amschluss werden wieder drei Karten zur Befölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt.
+
 ```{r}
 #| label: plz-ziffern
 
-#todo text wird nochmal verwendet
 german_plz_weighted <- left_join(
   german_plz,
   bahnhof %>%
@@ -540,7 +554,8 @@ todo: text datenqualität
 Plotting:
 ```{r}
 #| warning: false
-#| label: plz-tripple-plot
+#| label: fig-plz-tripple-plot
+#| fig-cap: Vergleich auf Ebene einzelner Postleitzahlen
 
 # wir sehen wesentlich breiteren ausbau im osten (mehr plz haben bahnhöfe)
 p1 <- ggplot(data = german_plz_weighted) +
@@ -567,7 +582,7 @@ p3 <- ggplot(data = german_plz_weighted) +
   scale_fill_gradient(name = "Bahnhofsdichte", trans = "log") +
   theme(legend.position = "bottom")
 
-plot_grid(p2, p3, p1, nrow = 1)
+plot_tripple_comparison(p2, p3, p1)
 ```
 
 todo: text erkentnisse
@@ -642,6 +657,7 @@ Folgender Prozentsatz an Bahnhöfen ist an einer Adresse mit "Bahnhof": `r addre
 Erkenntnisse aus Daten:
 
 * Viele Lücken in Bahnhofskarte
+* stadt-land unterschiede
 * (Bahnhofmenge korreliert leicht mit Einwohneranzahl)
 * ....
 
