@@ -19,7 +19,7 @@ execute:
 
 ## Fragestellung {#sec-Fragestellung}
 
-Jeder kennt das Problem mit der Bahn Freunde oder Bekannte am Land zu besuchen. Die langsamen Regionalbahnen halten an gefühlt jeder Ortschaft, nur nicht der wo man hin will. Wenn man anschließend den Bus verpasst, der dort 2 mal die Woche fährt, hinterfragt man schnell, wie es zur heutigen Bahnhofsverteilung gekommen ist. Einflussfaktoren bedingen sich unteranderem historisch, politisch (bspw. durch die Privatisierung der Bahn in 1994) oder durch wirtschaftlichen oder sozialen Druck (bspw. Bevölkerungswachstum in einer Stadt). Unter diesem Hintergrund stellt sich die Frage, inwiefern Bahnhöfe trotz der vielen Einflussfaktoren fair verteilt sind.
+Jeder kennt das Problem mit der Bahn Freunde oder Bekannte am Land zu besuchen. Die langsamen Regionalbahnen halten an gefühlt jeder Ortschaft, nur nicht der wo man hin will. Wenn man anschließend den Bus verpasst, der dort 2 mal die Woche fährt, hinterfragt man schnell, wie es zur heutigen Bahnhofsverteilung gekommen ist. Einflussfaktoren bedingen sich unter anderem historisch, politisch (bspw. durch die Privatisierung der Bahn in 1994) oder durch wirtschaftlichen oder sozialen Druck (bspw. Bevölkerungswachstum in einer Stadt). Unter diesem Hintergrund stellt sich die Frage, inwiefern Bahnhöfe trotz der vielen Einflussfaktoren fair verteilt sind und welche anderen interessanten Erkenntnisse man aus der Verteilung der Bahnhöfe in Deutschland gewinnen kann.
 
 todo: ohne pol. hintergrund die daten anschauen
 
@@ -607,7 +607,7 @@ todo: erkenntnisse
 
 Folgende Erkenntnisse passen nicht ganz zur Fragestellung, sind aber dennoch interessant.
 
-#### Prozentsatz an Bahnhöfen mit "Bahnhof" in Adresse
+#### Prozentsatz an Bahnhöfen mit "Bahnhof" in Adresse {.unnumbered}
 
 ```{r}
 #| output: false
