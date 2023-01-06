@@ -228,57 +228,65 @@ ggplot() +
   bahn_map_theme
 ```
 
-In karte erkennbar: todo text
+Städte sind auf der Karte leicht als Bahnhofs-Cluster zu erkennen.
+Ausgehend von den Großstäden breiten sich Bahnhöfe im Umland aus und binden kleinere Städte an das Bahnnetz.
+Zusätzlich sind zwischen den Städten die einzelnen Bahnstrecken zu erkennen.
+Bezogen auf die Fragestellung lässt sich durch die Karte leicht erkennen, dass sich Bahnhöfe erwartungsgemäß eher in städtische Regionen häufen als in ländlichen.
+<!-- Erwartungsgemäß sind ländliche Gebiete durch welche Bahnstrecken gehen (die Städte mit einender verbinden) besser angebunden als ländliche Gegenden die nich auf solchen Strecken liegen. -->
 
- * Cluster um städte
- * Stationen folgen Bahnlinien zwischen städten -> evtl. ungerecht, da eine ortschaft wahrscheinlicher einen Bahnhof bekommst wenn sie auf einer bahnstrecke zwischen strecken liegt
- * In Bayern große Stationsfreie flächen, im norden, vorallem im osten besser ausgeweitet/verteilt
- * Viele Stationen an der Französischen grenze
- 
-Einfärben der Kategorien und Aufgabenträger ist ebenfalls interessant (s. @fig-colored-station-map)
+Einfärben der Kategorien und Aufgabenträger ist ebenfalls interessant (s. ).
 
-todo: erklärung (alpha, ....)
+Im Datensatz sind die Stationen des Datensatzes in sieben Bahnhofskategorien aufgeteilt.
+Bahnhöfe werden nach angebotenen Leistungsmerkmalen, wie bspw. dem Vorhandensein technischer Stufenfreiheit, Service-Personal oder der Größe des Bahnhofs nach Anzahl der Reisenden/Zughalten kategorisiert.
+Bahnhöfe der Kategorie 1 verfügen über die größte und leistungsstärkste Infrastruktur und sind häufig als Hauptbahnhöfe in Großstädten zu finden.
+Bahnhöfe der Kategorie 7 hingegen besitzen sehr einfache bzw. geringe Infrastruktur und werden nur wenig frequentiert. [^31]
 
-todo: karten aufteilen mit text dazwischen (erklärung, fazit, ...)
+In @fig-colored-station-map wird die Karte der Bahnstationen im bezug auf diese Kategorien eingefärbt.
+Der Transparenzeffekt soll dazu dienen die dominanten Farben in Clustern ersichtlich zu machen.
 
 ```{r}
-#| code-fold: true
 #| label: fig-colored-station-map
-#| fig-cap: Karte aller Bahnstationen mit eingefärbten Aufgabenträgern und Kategorien
+#| fig-cap: Karte aller Bahnstationen mit eingefärbten Kategorien
 
-train_point_resposible <- ggplot() +
+ggplot() +
+  geom_sf(data = german_states) +
+  geom_point(
+    stations_geo_loc,
+    mapping = aes(x = lon, y = lat, color = `Kat. Vst`),
+    size = 0.3,
+    alpha = 0.1
+  ) +
+  scale_color_manual(values = c(
+    "black", "blue", "green", "yellow", "red", "orange", "pink"
+  )) +
+  labs(color = "Kategorie") +
+  guides(colour = guide_legend(override.aes = list(size=1, alpha = 1))) +
+  bahn_map_theme
+```
+
+Besonders im Vergleich der Größeren Städte fällt auf, dass nicht alle Bahnhofscluster gleich eingefärbt sind.
+So ist bspw. Stuttgart grün (Kategorie 3), Nürnberg rot (Kategorie 5) und München gelb (Kategorie 4).
+Im Umkehrschluss bedeutet das, dass bestimmte Städte bessere und kostenintensivere Bahnhofsinfrastruktuktur erhalten als andere (mehr dazu in @sec-bahnhofsanzahl). 
+
+Eine potentielle Ursache wird bei Betrachtung der Aufgabenträger ersichtlich (s. @fig-colored-station-map-responsible).
+Ähnlich wie in @fig-colored-station-map wird hierbei die Karte eingefärbt, da es zu keinen Überlappungen kommt kann hier auf den Transparenzwert verzichtet werden.
+
+```{r}
+#| label: fig-colored-station-map-responsible
+#| fig-cap: Karte aller Bahnstationen mit eingefärbten Aufgabenträgern
+
+ggplot() +
   geom_sf(data = german_states) +
   geom_point(
     stations_geo_loc,
     mapping = aes(x = lon, y = lat, color = Aufgabenträger),
     size = 0.1,
-    show.legend = F
+    show.legend = T
   ) +
+  scale_color_hue(labels = c("BEG", "HVV", "LNVG", "NVBW", "NASA", "VMT", "NSH", "NVV", "Region Hannover", "RVB", "RMV", "Bremen", "Region Stuttgart", "VVO", "VMV", "VBB", "VBB", "VRN", "ZVNL", "NVR", "NWL", "Vogtland", "ZPS", "SPNV-Nord", "SPNV-Süd", "VMS", "ZVON", "AöR")) +
   bahn_map_theme
-
-train_point_category <- ggplot() +
-  geom_sf(data = german_states) +
-  geom_point(
-    stations_geo_loc,
-    mapping = aes(x = lon, y = lat, color = `Kat. Vst`),
-    size = 0.1,
-    alpha = 0.1
-  ) +
-  scale_color_manual(values = c(
-    "black", # Fernbahnof (Hbf)
-    "blue", # Hbf größerer Städte
-    "green", # Hbf kleiner/mittleren städten
-    "yellow", # regionalbahnhof
-    "red", # stadtteilbahnhof
-    "orange", # landbahnof
-    "pink" # ultra landbahnhof
-  )) +
-  labs(color = "Kategorie") +
-  guides(colour = guide_legend(override.aes = list(size=1))) +
-  bahn_map_theme
-
-plot_grid(train_point_resposible, train_point_category, nrow = 1, rel_widths = c(1, 1.25))
 ```
+
 Bemerkbar ist: todo text
 
  * städte haben cluster an categorie 4
@@ -286,10 +294,10 @@ Bemerkbar ist: todo text
  * ländliche gegenden haben  cat 5-7 => folglich schlechtere bahnhöfe
  * wesentlich höherer cat 7 anteil im Norden! -> Benötigt evtl. anderen Graphen
  
+[^31]: Deutsche Bahn, "Die sieben Bahnhofskategorien",  <https://web.archive.org/web/20130417011010/http://www.deutschebahn.com/de/geschaefte/infrastruktur/bahnhof/bahnhofs_kategorien.html>, 2012
 
 
-
-### Top 12 Städte nach Bahnhofanzahl
+### Top 12 Städte nach Bahnhofanzahl {#sec-bahnhofsanzahl}
 
 <!-- warum top12? -->
 
