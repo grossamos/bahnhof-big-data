@@ -451,20 +451,21 @@ bahnhof %>%
   count(.) / nrow(bahnhof)
 ```
 
-#### Top 10 Städte nach Bahnhofanzahl
+#### Top 12 Städte nach Bahnhofanzahl
 
+<!-- warum top12? -->
 
 ```{r}
-t = (table(bahnhof$Ort))
-t.order = as.data.frame(t[order(t, decreasing = T)])
+n.orte = (table(bahnhof$Ort))
+n.orte.order = as.data.frame(n.orte[order(n.orte, decreasing = T)])
 
-top10 = filter(bahnhof, Ort %in% t.order[1:12,]$Var1)
+top12 = filter(bahnhof, Ort %in% n.orte.order[1:12,]$Var1)
 
-top10 <- top10 %>% left_join(t.order, by = c("Ort" = "Var1")) 
+top12 <- top12 %>% left_join(n.orte.order, by = c("Ort" = "Var1")) 
 
 # TODO colormatching
 
-ggplot(data=top10) +
+ggplot(data=top12) +
   geom_bar(
     aes(
       x=reorder(Ort, Freq, decreasing = T), 
@@ -485,15 +486,14 @@ ggplot(data=top10) +
 ```
 
 ```{r}
-t = (table(bahnhof$Bundesland))
-t.order = as.data.frame(t[order(t, decreasing = T)])
+n.bundesland = (table(bahnhof$Bundesland))
+n.bundesland.order = as.data.frame(n.bundesland[order(n.bundesland, decreasing = T)])
 
-top10 = filter(bahnhof, Bundesland %in% t.order$Var1)
-top10 <- top10 %>% left_join(t.order, by = c("Bundesland" = "Var1")) 
+bahnhof.bundesland <- bahnhof %>% left_join(n.bundesland.order, by = c("Bundesland" = "Var1")) 
 
 # TODO colormatching
 
-ggplot(data=top10) +
+ggplot(data=bahnhof.bundesland) +
   geom_bar(
     aes(
       x=reorder(Bundesland, Freq, decreasing = T), 
