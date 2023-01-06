@@ -9,21 +9,25 @@ format:
     fig-height: 4
 toc: true
 toc-depth: 3
+execute:
+  cache: true
 ---
 
 ## Fragestellung {#sec-Fragestellung}
 
 Jeder kennt das Problem mit der Bahn Freunde oder Bekannte am Land zu besuchen.
 Die langsamen Regionalbahnen halten an gefühlt jeder Ortschaft, nur nicht der wo man hin will.
-Wenn man anschließend den Bus verpasst, der dort 2 mal die Woche fährt, hinterfragt man schnell wie es zur heutigen Bahnhofsverteilung gekommen ist.
+Wenn man anschließend den Bus verpasst, der dort 2 mal die Woche fährt, hinterfragt man schnell, wie es zur heutigen Bahnhofsverteilung gekommen ist.
 Einflussfaktoren bedingen sich unteranderem historisch, politisch (bspw. durch die Privatisierung der Bahn in 1994) oder durch wirtschaftlichen oder sozialen Druck (bspw. Bevölkerungswachstum in einer Stadt).
 Unter diesem Hintergrund stellt sich die Frage, inwiefern Bahnhöfe trotz der vielen Einflussfaktoren fair verteilt sind.
 
+todo: ohne pol. hintergrund die daten anschauen
+
 ## Datenquellen
 
-Um die Frage in @sec-Fragestellung zu beantworten haben wir ein Datensatz der Deutschen Bahn mit allen deutschen Bahnstationen analysiert[^1].
-Der Datensatz enthält Address, Verkehrsbund und Verwaltungsdaten für die Bahnstationen.
-Zusätzlich wird ein Datensatz mit Bevölkerungs-, Bundesland- und Postleitzahldaten[^2] [^3] ergänzt um einen späteren Abgleich möglich zu machen.
+Um die Frage in @sec-Fragestellung zu beantworten wird ein Datensatz der Deutschen Bahn mit allen deutschen Bahnstationen analysiert[^1].
+Der Datensatz enthält Addresse, Verkehrsbund und Verwaltungsdaten für die Bahnstationen.
+Zusätzlich werden Datensätze mit Bevölkerungs-, Bundesland- und Postleitzahldaten[^2] [^3] ergänzt um einen späteren Abgleich möglich zu machen.
 Intuitiv wird erwartet, dass der Datensatz die ungleiche Verteilung zwischen Bahnhöfen im Land und der Stadt wiederspeigelt, aber im bundesweiten Vergleich alle ländlichen und städischen Gebieten ähnlich sind.
 
 [^1]: DB RegioNetz Infrastruktur GmbH, "Stationsdaten", <https://data.deutschebahn.com/dataset/data-stationsdaten.html>, 20.03.2020
@@ -33,7 +37,7 @@ Intuitiv wird erwartet, dass der Datensatz die ungleiche Verteilung zwischen Bah
 
 ## Laden der Daten
 
-In diesem Abschnitt werden die Daten aus den Datenquellen mit R eingelesen und bereinigt. Dies teil sich auf in die Daten der Stationen und in geographische Daten.
+In diesem Abschnitt werden die Daten aus den Datenquellen mit R eingelesen und bereinigt. Stationsdaten und geographische Daten werden seperat behandelt.
 
 ```{r}
 #| output: false
@@ -80,16 +84,16 @@ bahnhof <- bahnhof %>%
 Der Stationsdatensatz beinhaltet die genaue Adresse (`PLZ`, `Ort`, `Straße`, `Bundesland`), Namen (`Station`), Regionalbereich (`RB`), Bahnhofnummer (`Bf. Nr.`), Abkürzung (`Bf DS 100Abk.`), Aufgabenträger (`Aufgabenträger`), Bahnhofsmanagement (`BM`) und Kategorie (`Kat. Vst`) aller Stationen der deutschen Bahn.
 Bis auf die Kategorie und Bahnhofnummer sind alle Spalten Zeichenketten.
 Die Postleitzahl wird als Zeichenkette spezifiziert um eine spätere Auswertung führenden "0"-Ziffern zu erleichtern.
-Die Stations Kategorie wird als factor aufgefasst und die Bahnhofsnummer als Zahl.
+Die Stations Kategorie wird als *factor* aufgefasst und die Bahnhofsnummer als Zahl.
 
-Insgesammt zehn Zeilen enthalten `NA`s, können aber mit den Stationswebseiten der Deutschen Bahn[^4] ergänzt werden.
+Insgesammt zehn Zeilen enthalten `NA`s. Diese können aber mit den Stationswebseiten der Deutschen Bahn[^4] ergänzt werden.
 Einzelne Postleitzahlen (überwiegend in Sachsen) mangeln eine führende "0". 
 Diese wird ebenfalls ergänzt.
 
 Allgemein lässt sich aussagen, dass der Datensatz mit `r nrow(bahnhof)` Stationen nahezu alle der 5693  [^5] Personenbahnhöfen enthält und daher relativ vollständig ist. 
 
 [^4]: Deutsche Bahn, "bahnhof.de", <https://www.bahnhof.de/>, 2022
-[^5]: Deutsche Bahn, "Integrierter Bericht 2021", 2022
+[^5]: Deutsche Bahn, "Integrierter Bericht 2021", <https://ibir.deutschebahn.com/2021/fileadmin/pdf/DB21_DuF_d_web_01.pdf>, 2022
 
 ### Geographische Daten
 
@@ -151,6 +155,8 @@ Der Bundesländerdatensatz wird manuel um diese Daten ergänzt [^6].
 
 ## Analyse der Daten
 
+todo text
+
 ### Lagenanalyse der Stationen
 Ein erster Überblick soll mithilfe einer Karte alle Bahnhöfe in Deutschland erstellt werden.
 Die in dem Stationsdatensatz enthaltenen Adressen werden mithilfe von `ggmap` auf Längen- und Breitengrade übersetzt.
@@ -196,7 +202,7 @@ Die bearbeiteten Daten beinhaltet letztendlich `r nrow(stations_geo_loc) / previ
 Mithilfe dieser Daten und des Bundesland Shapefiles lässt sich nun die Karte aller Bahnstationen erstellen (s. @fig-station-map)
 
 ```{r}
-#| echo: false
+#| code-fold: true
 
 # used in multiple plots
 bahn_map_theme <- theme(
@@ -222,7 +228,7 @@ ggplot() +
   bahn_map_theme
 ```
 
-In karte erkennbar:
+In karte erkennbar: todo text
 
  * Cluster um städte
  * Stationen folgen Bahnlinien zwischen städten -> evtl. ungerecht, da eine ortschaft wahrscheinlicher einen Bahnhof bekommst wenn sie auf einer bahnstrecke zwischen strecken liegt
@@ -231,6 +237,9 @@ In karte erkennbar:
  
 Einfärben der Kategorien und Aufgabenträger ist ebenfalls interessant (s. @fig-colored-station-map)
 
+todo: erklärung (alpha, ....)
+
+todo: karten aufteilen mit text dazwischen (erklärung, fazit, ...)
 
 ```{r}
 #| code-fold: true
@@ -270,193 +279,13 @@ train_point_category <- ggplot() +
 
 plot_grid(train_point_resposible, train_point_category, nrow = 1, rel_widths = c(1, 1.25))
 ```
-Bemerkbar ist:
+Bemerkbar ist: todo text
 
  * städte haben cluster an categorie 4
  * stuttgart hat als einzige stadt cat 3 -> wgn unterschiedlichem verkerhrsbund (s. discord für quelle und erklärung)
  * ländliche gegenden haben  cat 5-7 => folglich schlechtere bahnhöfe
  * wesentlich höherer cat 7 anteil im Norden! -> Benötigt evtl. anderen Graphen
  
-```{r}
-#| code-fold: true
-ggplot(bahnhof %>%
-         filter(!Bundesland %in% c("Hamburg", "Bremen", "Brandenburg", "Berlin")) # Städte haben keine ländliche region und haben daher andere verteilungen
-   ) +
-  geom_violin(aes(y = `Kat. Vst`, x = Bundesland, group = Bundesland)) +
-  coord_flip()
-```
-Thüringen, Mecklenburg Vorpommern und Aachsen Anhalt haben überdimensional viele cat 6/7 im vergelich zu allen anderen. Kann potentiell an Mangel an größeren Städten liegen?
-
-TODO: evtl. hier das mit der Bahnhofstraße einfügen?
-
-### Vergleich auf Bundesländerebene
-
-Vergleich auf Bundesländerebene:
-```{r}
-german_states_weighted <- left_join(
-  german_states,
-  bahnhof %>%
-    count(Bundesland),
-  by = c("name_1" = "Bundesland")
-)
-
-heatmap_theme <- bahn_map_theme +
-  theme(legend.position = "bottom", legend.title=element_blank())
-
-population_per_train_theme <- scale_fill_gradient(trans = "log", labels = c(0.0001, 0.00005), breaks = c(0.0001, 0.00005)) 
-
-# Heatmap of station density
-population_per_train <- ggplot(data = german_states_weighted) +
-  geom_sf(
-    aes(fill = n/population)
-  ) +
-  heatmap_theme +
-  population_per_train_theme
-
-population_density_theme <- scale_fill_gradient(trans = "log", labels = c(150, 500, 2000), breaks = c(150, 500, 2000))
-
-population_density <- ggplot(data = german_states_weighted) +
-  geom_sf(
-    aes(fill = population/area)
-  ) +
-  heatmap_theme +
-  population_density_theme
-
-train_density_theme <- scale_fill_gradient(trans = "log", labels = c(0.01, 0.02, 0.5, 0.1), breaks = c(0.01, 0.02, 0.05, 0.1))
-
-train_density <- ggplot(data = german_states_weighted) +
-  geom_sf(
-    aes(fill = n/area)
-  ) +
-  heatmap_theme +
-  train_density_theme
-
-plot_tripple_comparison <- function(population_density, train_density, population_per_train) {
-  plot_grid(population_density, train_density, population_per_train, nrow = 1, labels = c("Bevölkerungsdichte", "Bahnhofdichte (1/qkm)", "Bahnhof pro Person"), hjust = 0)  
-}
-
-plot_tripple_comparison(population_density, train_density, population_per_train)
-
-```
-
-### erste 2 ziffern plz
-
-```{r}
-#| output: false
-
-german_plz_weighted <- left_join(
-  german_plz,
-  bahnhof %>%
-    count(PLZ) %>%
-    replace_na(list(n = 0)),
-  by = c("plz" = "PLZ")
-)
-```
-
-```{r}
-grouped_plz <- german_plz_weighted %>%
-  mutate(leitgruppe = substring(plz, 1, 2)) %>%
-  group_by(leitgruppe) %>%
-  summarise(
-    einwohner = sum(einwohner),
-    bahnhof_num = sum(n, na.rm = T)
-  )
-
-grouped_plz$qkm <- st_area(grouped_plz)
-grouped_plz <- grouped_plz %>% mutate(qkm = as.numeric(qkm))
-
-population_per_train <- ggplot(grouped_plz) +
-  geom_sf(aes(fill = einwohner/bahnhof_num)) +
-  scale_fill_gradient(trans = "log", labels = c(10000, 25000, 50000), breaks = c(10000, 25000, 50000)) +
-  heatmap_theme
-
-population_density <- ggplot(grouped_plz) +
-  geom_sf(aes(fill = einwohner/qkm)) +
-  scale_fill_gradient(trans = "log", labels = c(0.0001, 0.001, 0.005), breaks = c(0.0001, 0.001, 0.005)) +
-  heatmap_theme
-population_density
-
-train_density <- ggplot(grouped_plz) +
-  geom_sf(aes(fill = bahnhof_num/qkm)) +
-  scale_fill_gradient(trans = "log", labels = c(4e-09, 1e-08, 3e-07), breaks = c(4e-09, 5e-08, 3e-07)) +
-  heatmap_theme
-train_density
-
-plot_tripple_comparison(population_density, train_density, population_per_train)
-```
-
-
-### Mehr Granularität durch Postleitzahlen:
-
-Datentransformation:
-```{r}
-#| output: false
-
-german_plz_weighted <- german_plz_weighted %>%
-  mutate(
-    ratio1 = einwohner/n,
-    ratio2 = einwohner/qkm,
-    ratio3 = n/qkm,
-  ) %>%
-  replace_na(list(n = 0, ratio1 = 0, ratio2 = 0, ratio3 = 0))
-
-# TODO (obersten 2 sind flughäfen)
-# german_plz_weighted %>% arrange((ratio2))
-```
-
-Plotting:
-```{r}
-#| warning: false
-
-# wir sehen wesentlich breiteren ausbau im osten (mehr plz haben bahnhöfe)
-p1 <- ggplot(data = german_plz_weighted) +
-  geom_sf(
-    aes(fill = ratio1),
-    linewidth = 0.01
-  ) +
-  scale_fill_gradient(name = "Bevölkerung pro Bahnhof", trans = "log") +
-  theme(legend.position = "bottom")
-
-p2 <- ggplot(data = german_plz_weighted) +
-  geom_sf(
-    aes(fill = ratio2),
-    linewidth = 0.01
-  ) +
-  scale_fill_gradient(name = "Bevölkerungsdichte", trans = "log") +
-  theme(legend.position = "bottom")
-
-p3 <- ggplot(data = german_plz_weighted) +
-  geom_sf(
-    aes(fill = ratio3),
-    linewidth = 0.01
-  ) +
-  scale_fill_gradient(name = "Bahnhofsdichte", trans = "log") +
-  theme(legend.position = "bottom")
-
-plot_grid(p2, p3, p1, nrow = 1)
-```
-
-### Versuch auf einem Grid
-
-```{r}
-germany_matrix <- matrix(rep(0, 50*80), nrow = 50, ncol = 120)
-
-# we need it to be sequential
-for(x in 1:nrow(stations_geo_loc)) {
-  lon <- round((stations_geo_loc[x, "lon"] - 5.5) * 5)[1, 1]
-  lat <- round((stations_geo_loc[x, "lat"] - 46) * 12)[1, 1]
-  germany_matrix[lon, lat] <- germany_matrix[lon, lat] + 1
-}
-
-germany_df <- melt(germany_matrix, c("x", "y"), value.name = "z")
-germany_df$z[germany_df$z == 0] = NA
-
-ggplot(germany_df, aes(x, y, fill =z)) +
-  geom_tile() +
-  scale_fill_continuous(na.value = "white") +
-  theme(aspect.ratio = 4/3)
-
-```
 
 
 
@@ -507,7 +336,12 @@ Berlin hat im Vergleich zu den anderen Städten deutlich mehr Bahnhöfe. Dies k�
 
 München, Frankfurt und Stuttgart haben im Vergleich zu den anderen Städten verhältnismäßig mehr Bahnhöfe der Kategorie 3. Dies ist auch in Figure @fig-colored-station-map sichtbar, da hier in der rechten Karte mit leicht transparenten Punkten in diesen Städten die Kategorie 3 deutlich ausgeprägter ist.
 
-### Bundesländer nach Bahnhofskategorien
+
+### Vergleich auf Bundesländerebene
+
+todo: einleitungstext
+
+todo: barchart daten erklären, 
 
 ```{r}
 #| code-fold: true
@@ -539,20 +373,215 @@ ggplot(data=bahnhof.bundesland) +
 
 ```
 
+todo: barchart fazit
 
 
 
-### Weitere Diagramme
 
-todo: braucht german_plz_weighted von oben
-<!-- ### Boxplot -->
-<!-- im vergleich zu oben -->
-<!-- ```{r} -->
-<!-- ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) + -->
-<!--   geom_boxplot(aes(x = n, y = einwohner, fill = n, group = n)) -->
-<!-- # ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) + -->
-<!-- #   geom_violin(aes(x = n, y = einwohner, fill = n, group = n)) -->
-<!-- ``` -->
+
+Vergleich auf Bundesländerebene:
+
+todo: text datenmanipulation
+```{r}
+german_states_weighted <- left_join(
+  german_states,
+  bahnhof %>%
+    count(Bundesland),
+  by = c("name_1" = "Bundesland")
+)
+
+heatmap_theme <- bahn_map_theme +
+  theme(legend.position = "bottom", legend.title=element_blank())
+
+population_per_train_theme <- scale_fill_gradient(trans = "log", labels = c(0.0001, 0.00005), breaks = c(0.0001, 0.00005)) 
+
+# Heatmap of station density
+population_per_train <- ggplot(data = german_states_weighted) +
+  geom_sf(
+    aes(fill = n/population)
+  ) +
+  heatmap_theme +
+  population_per_train_theme
+
+population_density_theme <- scale_fill_gradient(trans = "log", labels = c(150, 500, 2000), breaks = c(150, 500, 2000))
+
+population_density <- ggplot(data = german_states_weighted) +
+  geom_sf(
+    aes(fill = population/area)
+  ) +
+  heatmap_theme +
+  population_density_theme
+
+train_density_theme <- scale_fill_gradient(trans = "log", labels = c(0.01, 0.02, 0.5, 0.1), breaks = c(0.01, 0.02, 0.05, 0.1))
+
+train_density <- ggplot(data = german_states_weighted) +
+  geom_sf(
+    aes(fill = n/area)
+  ) +
+  heatmap_theme +
+  train_density_theme
+
+plot_tripple_comparison <- function(population_density, train_density, population_per_train) {
+  plot_grid(population_density, train_density, population_per_train, nrow = 1, labels = c("Bevölkerungsdichte", "Bahnhofdichte (1/qkm)", "Bahnhof pro Person"), hjust = 0)  
+}
+
+plot_tripple_comparison(population_density, train_density, population_per_train)
+
+```
+
+todo: fazit/erkentnisse
+
+
+### Mehr Granularität durch Postleitzahlen
+
+todo: text einleitung
+
+todo: text datenmanipulation & plotting mit erklärung log.scala
+```{r}
+#| label: plz-ziffern
+
+#todo text wird nochmal verwendet
+german_plz_weighted <- left_join(
+  german_plz,
+  bahnhof %>%
+    count(PLZ) %>%
+    replace_na(list(n = 0)),
+  by = c("plz" = "PLZ")
+)
+
+grouped_plz <- german_plz_weighted %>%
+  mutate(leitgruppe = substring(plz, 1, 2)) %>%
+  group_by(leitgruppe) %>%
+  summarise(
+    einwohner = sum(einwohner),
+    bahnhof_num = sum(n, na.rm = T)
+  )
+
+grouped_plz$qkm <- st_area(grouped_plz)
+grouped_plz <- grouped_plz %>% mutate(qkm = as.numeric(qkm))
+
+population_per_train <- ggplot(grouped_plz) +
+  geom_sf(aes(fill = einwohner/bahnhof_num)) +
+  scale_fill_gradient(trans = "log", labels = c(10000, 25000, 50000), breaks = c(10000, 25000, 50000)) +
+  heatmap_theme
+
+population_density <- ggplot(grouped_plz) +
+  geom_sf(aes(fill = einwohner/qkm)) +
+  scale_fill_gradient(trans = "log", labels = c(0.0001, 0.001, 0.005), breaks = c(0.0001, 0.001, 0.005)) +
+  heatmap_theme
+
+train_density <- ggplot(grouped_plz) +
+  geom_sf(aes(fill = bahnhof_num/qkm)) +
+  scale_fill_gradient(trans = "log", labels = c(4e-09, 1e-08, 3e-07), breaks = c(4e-09, 5e-08, 3e-07)) +
+  heatmap_theme
+
+plot_tripple_comparison(population_density, train_density, population_per_train)
+```
+
+todo: text erkentnisse
+
+#### volle plz todo
+
+todo?: text einleitung oder schon oben  mit drin
+
+Datentransformation:
+
+todo: text datenmanipulation
+```{r}
+#| output: false
+
+german_plz_weighted <- german_plz_weighted %>%
+  mutate(
+    ratio1 = einwohner/n,
+    ratio2 = einwohner/qkm,
+    ratio3 = n/qkm,
+  ) %>%
+  replace_na(list(n = 0, ratio1 = 0, ratio2 = 0, ratio3 = 0))
+
+# TODO (obersten 2 sind flughäfen)
+# german_plz_weighted %>% arrange((ratio2))
+```
+
+todo: text datenqualität
+
+Plotting:
+```{r}
+#| warning: false
+#| label: plz-tripple-plot
+
+# wir sehen wesentlich breiteren ausbau im osten (mehr plz haben bahnhöfe)
+p1 <- ggplot(data = german_plz_weighted) +
+  geom_sf(
+    aes(fill = ratio1),
+    linewidth = 0.01
+  ) +
+  scale_fill_gradient(name = "Bevölkerung pro Bahnhof", trans = "log") +
+  theme(legend.position = "bottom")
+
+p2 <- ggplot(data = german_plz_weighted) +
+  geom_sf(
+    aes(fill = ratio2),
+    linewidth = 0.01
+  ) +
+  scale_fill_gradient(name = "Bevölkerungsdichte", trans = "log") +
+  theme(legend.position = "bottom")
+
+p3 <- ggplot(data = german_plz_weighted) +
+  geom_sf(
+    aes(fill = ratio3),
+    linewidth = 0.01
+  ) +
+  scale_fill_gradient(name = "Bahnhofsdichte", trans = "log") +
+  theme(legend.position = "bottom")
+
+plot_grid(p2, p3, p1, nrow = 1)
+```
+
+todo: text erkentnisse
+
+
+### Bahnhoskategorien nach Einwohner
+
+todo text: im vergleich zu oben & erkentnisse daraus
+
+
+```{r}
+ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
+  geom_boxplot(aes(x = n, y = einwohner, fill = n, group = n))
+# ggplot(german_plz_weighted %>% group_by(n) %>% filter(n() >= 25)) +
+#   geom_violin(aes(x = n, y = einwohner, fill = n, group = n))
+```
+
+
+### Versuch auf einem Grid
+
+todo: text einleitung
+
+todo: text datenmanupulation
+
+todo: graph cleanen
+```{r}
+germany_matrix <- matrix(rep(0, 50*80), nrow = 50, ncol = 120)
+
+# we need it to be sequential
+for(x in 1:nrow(stations_geo_loc)) {
+  lon <- round((stations_geo_loc[x, "lon"] - 5.5) * 5)[1, 1]
+  lat <- round((stations_geo_loc[x, "lat"] - 46) * 12)[1, 1]
+  germany_matrix[lon, lat] <- germany_matrix[lon, lat] + 1
+}
+
+germany_df <- melt(germany_matrix, c("x", "y"), value.name = "z")
+germany_df$z[germany_df$z == 0] = NA
+
+ggplot(germany_df, aes(x, y, fill =z)) +
+  geom_tile() +
+  scale_fill_continuous(na.value = "white") +
+  theme(aspect.ratio = 4/3)
+
+```
+
+todo: erkenntnisse
+
 
 
 
@@ -561,24 +590,29 @@ Folgende Erkenntnisse passen nicht ganz zur Fragestellung, sind aber dennoch int
 
 
 #### Prozentsatz an Bahnhöfen mit "Bahnhof" in Adresse
-Folgender Prozentsatz an Bahnhöfen ist an einer Adresse mit "Bahnhof": `r bahnhof %>% filter(grepl("Bahnhof", Straße)) %>% count(.) / nrow(bahnhof)`%
 ```{r}
-#| code-fold: true
 #| output: false
 
-bahnhof %>%
+address.percentage <- bahnhof %>%
   filter(grepl("Bahnhof", Straße)) %>%
   count(.) / nrow(bahnhof)
 ```
 
 
+Folgender Prozentsatz an Bahnhöfen ist an einer Adresse mit "Bahnhof": `r address.percentage`%
+
+
 ## Fazit !TODO!
 
 Erkenntnisse aus Daten:
+
 * Viele Lücken in Bahnhofskarte
 * (Bahnhofmenge korreliert leicht mit Einwohneranzahl)
 * ....
 
+Liste was man noch hätte machen können: todo
+
+- postleitzahl an de grenze
 
 
 <!-- ## Quellen -->
