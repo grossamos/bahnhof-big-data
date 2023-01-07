@@ -149,7 +149,9 @@ Für die Kartenanalysen dieser Arbeit werden Polygonaldaten in Form von Shapefil
 
 ## Analyse der Daten
 
-todo text
+Nachdem die Daten erfolgreich geladen sind, gilt es nun diese zu Analysieren.
+Dabei wird zuerst die genauen Lageverteilung der Stationen betrachtet und anschließend in verschiedenen Granularitätstufen mit Populationsdaten verglichen.
+Ziel ist es Merkmale zu finden, die hinweise darauf liefern ob die Verteilung der Bahnhöfe in Deutschland gerecht ist.
 
 ### Lagenanalyse der Stationen
 
