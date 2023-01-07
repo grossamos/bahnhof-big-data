@@ -10,7 +10,7 @@ format:
       dark: darkly
     fig-width: 8
     fig-height: 4
-    number-sections: True
+    number-sections: true
 toc: true
 toc-depth: 3
 execute:
@@ -519,7 +519,7 @@ plot_tripple_comparison(population_density, train_density, population_per_train)
 
 Mit diesen drei Karten kann man die vorhergehenden Vermutungen aus @sec-map-bundeslander spezifizieren. Es sind nun in der dritten Karte drei Regionen (Ost, Nordwest und Süd) zu erkennen, welche eine unterschiedliche Anzahl an Bahnhöfen pro Person haben.
 
-#### Aufteilung in einzelne Postleitzahlen
+#### Aufteilung in einzelne Postleitzahlen {#sec-plz-map}
 
 Im letzen Schritt der Analyse mit Karten werden nun die Bereiche in die einzelnen Postleitzahlregionen unterteilt. Hier ergibt sich nun auch die Besonderheit, dass es für einige PLZ keinen Bahnhof gibt. Dennoch muss hier keine weitere Datenmanipulation erfolgen und es kann mit den verarbeiteten Daten aus den vorherigen Schritten gearbeitet werden.
 
@@ -563,29 +563,41 @@ Mit dieser feien Granularität sieht man nun, dass die Bahnhofsdichte stark mit 
 ### Bahnhoskategorien nach Einwohner
 
 Um zu überprüfen, ob die Einwohneranzahl wie vermutet mit der Bahnhofsanzahl verwand ist, werden die Beiden größen miteinander verglichen.
-Damit der Graph aufgrund der vielen Postleitzahlen mit "0"-Werten nicht verfälscht wird, muss wie in den bisherigen Graphiken eine logarithmische Skalierung gewählt werden.
 Da sich aufgrund der Wertbereichsunterschiede zwischen der Einwohner- und Bahnhofsanzahl die Punkte eines Punktdiagramms zu sehr häufen würden, wird sich für ein Box-Plot entschieden.
+Damit der Graph aufgrund der vielen Postleitzahlen mit "0"-Werten nicht verfälscht wird, muss wie in den bisherigen Graphiken eine logarithmische Skalierung gewählt werden.
 
 
 ```{r}
+#| warning: false
+#| label: fig-box-plot
+#| fig-cap: Box-Plot der Einwohnerdichte zur Bahnhofsdichte
+
 grouped_german_plz_weighted <- german_plz_weighted %>% 
     mutate(bin = cut(einwohner/qkm, seq(min(einwohner/qkm), max(einwohner/qkm) + 5000, 5000), right = FALSE))
 
 ggplot(grouped_german_plz_weighted) +
   geom_boxplot(aes(x = einwohner/qkm, y = n/qkm, fill = bin, group = bin)) +
-  scale_y_continuous(trans = "log")
+  scale_y_continuous(trans = "log", labels = c(0.006, 0.04, 0.3, 2.7), breaks = c(0.006, 0.04, 0.3, 2.7)) +
+  scale_fill_discrete(labels = c("0 - 5000", "5000 - 10000", "10000 - 15000", "15000 - 20000")) +
+  xlab("Bevölkerungsdichte (1/km²)") +
+  ylab("Bahnhofsdichte (1/km²)") +
+  labs(fill = "")
+
 ```
 Erkennbar ist das wie erwartet höhere Einwohnerdichten mit höheren Bahnhofsdichten verwand sind.
+Die bei der Postleitzahlgraphik geäußerte Vermutung lässt sich daher bestätigen.
 
 ### Versuch auf einem Grid {#sec-grid}
 
-todo: text einleitung
-
-todo: text datenmanupulation
-
-todo: graph cleanen
+In @fig-plz-tripple-plot ist in Ostdeutschland eine großere Flächenabdeckung der Postleitzahlen mit Bahnhöfen zu sehen als im Westen.
+Ob dies einer real gleichmäßigeren Flächenabdeckung zu Grunde liegt oder einfach an den größeren Postleitzahlflächen in Ostdeutschland liegt soll mit einer gleichmäßig granularer Karte geprüft werden.
+Hierzu wird Deutschland in ein Gitter unterteilt und die Anzahl an Bahnhöfen je Fläche gezählt.
 
 ```{r}
+#| warning: false
+#| label: fig-grid-map
+#| fig-cap: Gitter an Bahnhöfen je Fläche
+
 germany_matrix <- matrix(rep(0, 50*80), nrow = 50, ncol = 120)
 
 # we need it to be sequential
@@ -607,13 +619,14 @@ ggplot(germany_df, aes(x, y, fill =z)) +
 
 ```
 
-todo: erkenntnisse
+Anders als erwartet ist die Flächenabdeckung von Bahnhöfen in Ostdeutschland nicht besser als die in Westdeutschland. 
+Im Bundesvergleich sind nahezu alle Länder ähnlich gut abgedeckt.
+Außnahmen bilden hier wie zuvor Populationszentren wie Frankfurt, Berlin oder München.
 
-### Fun facts
+### Fun Fact: Prozentsatz an Bahnhöfen mit "Bahnhof" in der Adresse
 
-Folgende Erkenntnisse passen nicht ganz zur Fragestellung, sind aber dennoch interessant.
-
-#### Prozentsatz an Bahnhöfen mit "Bahnhof" in Adresse {.unnumbered}
+Abseits der Fragestellung, ist bei der Analyse der Adressen aufgefallen, dass die aller meisten Straßennahnmen "Bahnhof" im Namen tragen (bspw. `Bahnhofstraße`, `Bahhofallee`).
+Um zu überprüfen ob sich diese Beobachtung im gesammten Datensatz wiederspiegelt wird folgendes getestet:
 
 ```{r}
 #| output: false
@@ -623,9 +636,11 @@ address.percentage <- bahnhof %>%
   count(.) / nrow(bahnhof)
 ```
 
-Folgender Prozentsatz an Bahnhöfen ist an einer Adresse mit "Bahnhof": `r address.percentage`%
+Und es stellt sich herraus, dass tatsächlich `r address.percentage`% aller Bahnhöfe "Bahnhof" in ihrer Adresse stehen haben!
 
 ## Fazit !TODO!
+
+Wie erwartet
 
 Erkenntnisse aus Daten:
 
