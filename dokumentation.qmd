@@ -35,7 +35,7 @@ Um die Frage in @sec-Fragestellung zu beantworten wird ein Datensatz der Deutsch
 
 ## Laden der Daten
 
-In diesem Abschnitt werden die Daten aus den Datenquellen mit R eingelesen und bereinigt. Stationsdaten und geographische Daten werden seperat behandelt.
+In diesem Abschnitt werden die Daten aus den Datenquellen mit R eingelesen und bereinigt. Stationsdaten und geografische Daten werden separat behandelt.
 
 ```{r}
 #| output: false
@@ -79,13 +79,14 @@ bahnhof <- bahnhof %>%
 
 ```
 
-Der Stationsdatensatz beinhaltet die genaue Adresse (`PLZ`, `Ort`, `Straße`, `Bundesland`), Namen (`Station`), Regionalbereich (`RB`), Bahnhofnummer (`Bf. Nr.`), Abkürzung (`Bf DS 100Abk.`), Aufgabenträger (`Aufgabenträger`), Bahnhofsmanagement (`BM`) und Kategorie (`Kat. Vst`) aller Stationen der deutschen Bahn. Bis auf die Kategorie und Bahnhofnummer sind alle Spalten Zeichenketten. Die Postleitzahl wird als Zeichenkette spezifiziert um eine spätere Auswertung führenden "0"-Ziffern zu erleichtern. Die Stations Kategorie wird als *factor* aufgefasst und die Bahnhofsnummer als Zahl.
+Der Stationsdatensatz beinhaltet die genaue Adresse (`PLZ`, `Ort`, `Straße`, `Bundesland`), Namen (`Station`), Regionalbereich (`RB`), Bahnhofnummer (`Bf. Nr.`), Abkürzung (`Bf DS 100Abk.`), Aufgabenträger (`Aufgabenträger`), Bahnhofsmanagement (`BM`) und Kategorie (`Kat. Vst`) aller Stationen der Deutschen Bahn. Bis auf die Kategorie und Bahnhofnummer sind alle Spalten Zeichenketten. Die Postleitzahl wird als Zeichenkette spezifiziert, um eine spätere Auswertung führenden "0"-Ziffern zu erleichtern. Die Stations-Kategorie wird als *factor* aufgefasst und die Bahnhofsnummer als Zahl.
 
-Insgesammt zehn Zeilen enthalten `NA`s. Diese können aber mit den Stationswebseiten der Deutschen Bahn[^4] ergänzt werden. Einzelne Postleitzahlen (überwiegend in Sachsen) mangeln eine führende "0". Diese wird ebenfalls ergänzt.
+Insgesamt zehn Zeilen enthalten `NA`s. Diese können aber mit den Stationswebseiten der Deutschen Bahn[^4] ergänzt werden. Einzelne Postleitzahlen (überwiegend in Sachsen) mangeln eine führende "0". Diese wird ebenfalls ergänzt.
 
 [^4]: Deutsche Bahn, "bahnhof.de", <https://www.bahnhof.de/>, 2022
 
 Allgemein lässt sich aussagen, dass der Datensatz mit `r nrow(bahnhof)` Stationen nahezu alle der 5693 [^5] Personenbahnhöfen enthält und daher relativ vollständig ist.
+
 
 [^5]: Deutsche Bahn, "Integrierter Bericht 2021", <https://ibir.deutschebahn.com/2021/fileadmin/pdf/DB21_DuF_d_web_01.pdf>, 2022
 
@@ -139,7 +140,7 @@ german_states$area <- c(
 )
 ```
 
-Für die Kartenanalysen dieser Arbeit werden Polygonaldaten in Form von Shapefiles verwendet. Miteinbezogen wird ein Datensatz mit Bundesländern [^6] und einer mit allen Postleitzahlen [^7]. Der Postleitzahldatensatz enthält Populations- und Flächendaten (`einwohner`, `qkm`). Der Bundesländerdatensatz wird manuel um diese Daten ergänzt [^8].
+Für die Kartenanalysen dieser Arbeit werden Polygonaldaten in Form von Shapefiles verwendet. Miteinbezogen wird ein Datensatz mit Bundesländern [^6] und einer mit allen Postleitzahlen [^7]. Der Postleitzahldatensatz enthält Populations- und Flächendaten (`einwohner`, `qkm`). Der Bundesländerdatensatz wird manuell um diese Daten ergänzt [^8].
 
 [^6]: Hijmans, Robert J., University of California, Berkeley. Museum of Vertebrate Zoology. "First-level Administrative Divisions, Germany, 2015", <https://geodata.lib.utexas.edu/catalog/stanford-nh891yz3147>, 2015
 
