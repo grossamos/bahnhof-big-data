@@ -1,6 +1,6 @@
 ---
 title: "Bahnhof"
-author: "Edmund Krain und Amos Gross"
+author: "Edmund Krain (3878327) und Amos Gross (todo)"
 date: "01.08.2023"
 editor: visual
 format: 
@@ -188,7 +188,7 @@ previous_len <- nrow(stations_geo_loc)
 stations_geo_loc <- stations_geo_loc[!stations_geo_loc$bahnhof_index %in% c(4651,654,1937,2794,2807,3080,184,4851,559,3622,2703,2305,3494,3160,3084), ]
 stations_geo_loc <- stations_geo_loc %>%
   filter(!is.na(lat) & !is.na(lon) & lon > 0)
- nrow(stations_geo_loc) / previous_len # we have presumably correct geolocations of 98% of the provided rows
+nrow(stations_geo_loc) / previous_len # we have presumably correct geolocations of 98% of the provided rows
 stations_geo_loc <- left_join(stations_geo_loc, rowid_to_column(bahnhof, "bahnhof_index"), by = c("bahnhof_index" = "bahnhof_index"))
 
 ```
@@ -431,21 +431,33 @@ population_density <- ggplot(data = german_states_weighted) +
     aes(fill = population/area)
   ) +
   heatmap_theme +
-  scale_fill_gradient(trans = "log", labels = c(150, 500, 2000), breaks = c(150, 500, 2000))
+  scale_fill_gradient(
+    trans = "log", 
+    labels = c(150, 500, 2000), 
+    breaks = c(150, 500, 2000)
+  )
 
 train_density <- ggplot(data = german_states_weighted) +
   geom_sf(
     aes(fill = n/area)
   ) +
   heatmap_theme +
-  scale_fill_gradient(trans = "log", labels = c(0.01, 0.02, 0.5, 0.1), breaks = c(0.01, 0.02, 0.05, 0.1))
+  scale_fill_gradient(
+    trans = "log", 
+    labels = c(0.01, 0.02, 0.5, 0.1), 
+    breaks = c(0.01, 0.02, 0.05, 0.1)
+  )
 
 population_per_train <- ggplot(data = german_states_weighted) +
   geom_sf(
     aes(fill = population/n)
   ) +
   heatmap_theme +
-  scale_fill_gradient(trans = "log", labels = c(6000, 15000, 30000), breaks = c(6000, 15000, 30000)) 
+  scale_fill_gradient(
+    trans = "log", 
+    labels = c(6000, 15000, 30000),
+    breaks = c(6000, 15000, 30000)
+  ) 
 
 
 plot_tripple_comparison <- function(population_density, train_density, population_per_train) {
@@ -517,17 +529,30 @@ grouped_plz <- grouped_plz %>% mutate(qkm = as.numeric(qkm)/1000000) # m² to km
 
 population_density <- ggplot(grouped_plz) +
   geom_sf(aes(fill = einwohner/qkm)) +
-  scale_fill_gradient(trans = "log", labels = c(100, 500, 2000), breaks = c(100, 500, 2000)) +
+  scale_fill_gradient(
+    trans = "log", 
+    labels = c(100, 500, 2000), 
+    breaks = c(100, 500, 2000)
+  ) +
   heatmap_theme
 
 train_density <- ggplot(grouped_plz) +
   geom_sf(aes(fill = bahnhof_num/qkm)) +
-  scale_fill_gradient(trans = "log", labels = c(0.01, 0.5, 0.2), breaks = c(0.01, 0.05, 0.2)) +
+  scale_fill_gradient(
+    trans = "log", 
+    labels = c(0.01, 0.5, 0.2), 
+    breaks = c(0.01, 0.05, 0.2)
+  ) +
   heatmap_theme
 
 population_per_train <- ggplot(grouped_plz) +
   geom_sf(aes(fill = einwohner/bahnhof_num)) +
-  scale_fill_gradient(trans = "log", labels = c(5000, 20000, 70000), breaks = c(5000, 20000, 70000), limits= c(5000, 70000)) +
+  scale_fill_gradient(
+    trans = "log", 
+    labels = c(5000, 20000, 70000), 
+    breaks = c(5000, 20000, 70000), 
+    limits= c(5000, 70000)
+  ) +
   heatmap_theme
 
 
@@ -552,7 +577,11 @@ population_density.plz <- ggplot(data = german_plz_weighted) +
     aes(fill = einwohner/qkm),
     color = NA
   ) +
-  scale_fill_gradient(trans = "log", labels = c(10, 500, 20000), breaks = c(10, 500, 20000)) +
+  scale_fill_gradient(
+    trans = "log", 
+    labels = c(10, 500, 20000), 
+    breaks = c(10, 500, 20000)
+  ) +
   heatmap_theme
 
 station_density.plz <- ggplot(data = german_plz_weighted) +
@@ -560,7 +589,11 @@ station_density.plz <- ggplot(data = german_plz_weighted) +
     aes(fill = n/qkm),
     color = NA
   ) +
-  scale_fill_gradient(trans = "log", labels = c(0.01, 0.1, 1), breaks = c(0.01, 0.1, 1)) +
+  scale_fill_gradient(
+    trans = "log", 
+    labels = c(0.01, 0.1, 1), 
+    breaks = c(0.01, 0.1, 1)
+  ) +
   heatmap_theme
 
 population_per_station.plz <- ggplot(data = german_plz_weighted) +
@@ -568,7 +601,11 @@ population_per_station.plz <- ggplot(data = german_plz_weighted) +
     aes(fill = einwohner/n),
     color = NA
   ) +
-  scale_fill_gradient(trans = "log", labels = c(500, 2000, 20000), breaks = c(500, 2000, 20000)) +
+  scale_fill_gradient(
+    trans = "log", 
+    labels = c(500, 2000, 20000), 
+    breaks = c(500, 2000, 20000)
+  ) +
   heatmap_theme
 
 plot_tripple_comparison(population_density.plz, station_density.plz, population_per_station.plz)
@@ -598,9 +635,21 @@ grouped_german_plz_weighted <- german_plz_weighted %>%
     mutate(bin = cut(einwohner/qkm, seq(min(einwohner/qkm), max(einwohner/qkm) + 5000, 5000), right = FALSE))
 
 ggplot(grouped_german_plz_weighted) +
-  geom_boxplot(aes(x = einwohner/qkm, y = n/qkm, fill = bin, group = bin)) +
-  scale_y_continuous(trans = "log", labels = c(0.006, 0.04, 0.3, 2.7), breaks = c(0.006, 0.04, 0.3, 2.7)) +
-  scale_fill_discrete(labels = c("0 - 5000", "5000 - 10000", "10000 - 15000", "15000 - 20000")) +
+  geom_boxplot(
+    aes(
+      x = einwohner/qkm, 
+      y = n/qkm, 
+      fill = bin, 
+      group = bin)
+  ) +
+  scale_y_continuous(
+    trans = "log", 
+    labels = c(0.006, 0.04, 0.3, 2.7), 
+    breaks = c(0.006, 0.04, 0.3, 2.7)
+  ) +
+  scale_fill_discrete(
+    labels = c("0 - 5000", "5000 - 10000", "10000 - 15000", "15000 - 20000")
+  ) +
   xlab("Bevölkerungsdichte (1/km²)") +
   ylab("Bahnhofsdichte (1/km²)") +
   labs(fill = "")
