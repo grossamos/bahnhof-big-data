@@ -151,8 +151,8 @@ Für die Kartenanalysen dieser Arbeit werden Polygonaldaten in Form von Shapefil
 ## Analyse der Daten
 
 Nachdem die Daten erfolgreich geladen sind, gilt es nun diese zu Analysieren.
-Dabei wird zuerst die genauen Lageverteilung der Stationen betrachtet und anschließend in verschiedenen Granularitätstufen mit Populationsdaten verglichen.
-Ziel ist es Merkmale zu finden, die hinweise darauf liefern ob die Verteilung der Bahnhöfe in Deutschland gerecht ist.
+Dabei wird zuerst die genaue Lageverteilung der Stationen betrachtet und anschließend in verschiedenen Granularitätsstufen mit Populationsdaten verglichen.
+Ziel ist es Merkmale zu finden, die Hinweise darauf liefern, ob die Verteilung der Bahnhöfe in Deutschland gerecht ist.
 
 ### Lagenanalyse der Stationen
 
@@ -193,7 +193,7 @@ stations_geo_loc <- left_join(stations_geo_loc, rowid_to_column(bahnhof, "bahnho
 
 ```
 
-Anschließend werden falsche Koordinaten und Stationen, die nicht gefunden werden konnten herrausgefiltert. Die bearbeiteten Daten beinhaltet letztendlich `r nrow(stations_geo_loc) / previous_len * 100`% der ursprünglichen Stationen. Mithilfe dieser Daten und des Bundesland Shapefiles lässt sich nun die Karte aller Bahnstationen erstellen (s. @fig-station-map)
+Anschließend werden falsche Koordinaten und Stationen, die nicht gefunden werden konnten, herausgefiltert. Die bearbeiteten Daten beinhaltet letztendlich `r nrow(stations_geo_loc) / previous_len * 100`% der ursprünglichen Stationen. Mithilfe dieser Daten und des Bundesland Shapefiles lässt sich nun die Karte aller Bahnstationen erstellen (s. @fig-station-map)
 
 ```{r}
 #| code-fold: true
@@ -242,7 +242,7 @@ Im Datensatz sind die Stationen des Datensatzes in sieben Bahnhofskategorien auf
 
 [^9]: Deutsche Bahn, "Die sieben Bahnhofskategorien", <https://web.archive.org/web/20130417011010/http://www.deutschebahn.com/de/geschaefte/infrastruktur/bahnhof/bahnhofs_kategorien.html>, 2012
 
-In @fig-colored-station-map wird die Karte der Bahnstationen im bezug auf diese Kategorien eingefärbt. Der Transparenzeffekt soll dazu dienen die dominanten Farben in Clustern ersichtlich zu machen.
+In @fig-colored-station-map wird die Karte der Bahnstationen in Bezug auf diese Kategorien eingefärbt. Der Transparenzeffekt soll dazu dienen, die dominanten Farben in Clustern ersichtlich zu machen.
 
 ```{r}
 #| label: fig-colored-station-map
@@ -264,10 +264,10 @@ ggplot() +
   bahn_map_theme
 ```
 
-Besonders im Vergleich der Größeren Städte fällt auf, dass nicht alle Bahnhofscluster gleich eingefärbt sind. So ist bspw. Stuttgart grün (Kategorie 3), Nürnberg rot (Kategorie 5) und München gelb (Kategorie 4). Im Umkehrschluss bedeutet das, dass bestimmte Städte bessere und kostenintensivere Bahnhofsinfrastruktuktur erhalten als andere (mehr dazu in @sec-bahnhofsanzahl).
+Besonders im Vergleich der größeren Städte fällt auf, dass nicht alle Bahnhofscluster gleich eingefärbt sind. So ist bspw. Stuttgart grün (Kategorie 3), Nürnberg rot (Kategorie 5) und München gelb (Kategorie 4). Im Umkehrschluss bedeutet das, dass bestimmte Städte bessere und kostenintensivere Bahnhofsinfrastruktuktur erhalten als andere (mehr dazu in @sec-bahnhofsanzahl).
 
-Insbesonderem Stuttgart fällt als am Stadt mit den höchst Kategorisierten Bahnstationen auf (s. @fig-colored-station-map).
-Eine potentielle Ursache wird bei Betrachtung der Aufgabenträger ersichtlich (s. @fig-colored-station-map-responsible). Ähnlich wie in @fig-colored-station-map wird hierbei die Karte eingefärbt, da es zu keinen Überlappungen kommt kann hier auf den Transparenzwert verzichtet werden.
+Insbesondere Stuttgart fällt als Stadt mit den am höchst kategorisierten Bahnstationen auf (s. @fig-colored-station-map).
+Eine potenzielle Ursache wird bei Betrachtung der Aufgabenträger ersichtlich (s. @fig-colored-station-map-responsible). Ähnlich wie in @fig-colored-station-map wird hierbei die Karte eingefärbt, da es zu keinen Überlappungen kommt kann hier auf den Transparenzwert verzichtet werden.
 
 ```{r}
 #| label: fig-colored-station-map-responsible
@@ -286,17 +286,18 @@ ggplot() +
   bahn_map_theme
 ```
 
-Im Gegensatz zu Bundesländern wie Bayern, Thüringen oder Sachsen-Anhalt hat Baden Württemberg einen seperaten Aufgabenträger für seine Hauptstadt.
+Im Gegensatz zu Bundesländern wie Bayern, Thüringen oder Sachsen-Anhalt hat Baden-Württemberg einen separaten Aufgabenträger für seine Hauptstadt.
 Aufgabenträger finanzieren Bahninfrastruktur, Stationen und Bahnlinien.
-Somit beinflussen Aufgabenträger auch die Leistungen eines Bahnhofs, die die dessen Kategorie bestimmen.
-Eine Trennung von Aufgabenträgern in Baden Württemberg und Stuttgart könnte zu disproportionalen Finanzierungsmitteln führen und so Stuttgart ermöglicht haben bessere Bahnhöfe zu bauen.
+Somit beeinflussen Aufgabenträger auch die Leistungen eines Bahnhofs, die die dessen Kategorie bestimmen.
+Eine Trennung von Aufgabenträgern in Baden-Württemberg und Stuttgart könnte zu disproportionalen Finanzierungsmitteln führen und so Stuttgart ermöglicht haben, bessere Bahnhöfe zu bauen.
 <!-- An Beispielen wie Dresdenn zeigt sich jedoch, dass eine solche Trennung nicht zwangshaft zu der eben vermuteten disproportionalen Finanzierung führen muss. -->
 
 ### Top 12 Städte nach Bahnhofanzahl {#sec-bahnhofsanzahl}
 
 Um zu überprüfen, ob die in @fig-colored-station-map festgestellten Unterschiede zwischen Städten auch tatsächlich vorkommen und nicht bspw. aufgrund der Farbwahl in der Karte erscheinen, wird die Verteilung der Kategorien in den 12 größten deutschen Städten näher betrachtet.
 
-Zur Vorbereitung wird das data frame `bahnhof` nach Orten gruppiert und die Häufigkeit jedes Ortes berechnet. Diese Häufigkeiten werden in einem neuen data frame namens `n.orte` gespeichert und in absteigender Reihenfolge sortiert. Danach wird das data frame `top12` erstellt, indem die Zeilen des ursprünglichen data frames `bahnhof` ausgewählt werden, die sich auf die Top 12 Orte beziehen. Schließlich wird das data frame `top12` mit dem sortierten data frame `n.orte.order` verbunden, um die Häufigkeit jedes Ortes hinzuzufügen. Anschließend wird mit `ggplot` ein Balkendiagramm erstellt, das die Anzahl der Bahnhöfe in den Top 12 Städten anzeigt und die Bahnhofskategorien farblich unterscheidet. Es wird die gleiche Farbpallette wie in @fig-colored-station-map und @fig-bar-bundeslander verwendet.
+Zur Vorbereitung wird das data frame `bahnhof` nach Orten gruppiert und die Häufigkeit jedes Ortes berechnet. Diese Häufigkeiten werden in einem neuen data frame namens `n.orte` gespeichert und in absteigender Reihenfolge sortiert. Danach wird das data frame `top12` erstellt, indem die Zeilen des ursprünglichen data frames `bahnhof` ausgewählt werden, die sich auf die Top 12 Orte beziehen. Schließlich wird das data frame `top12` mit dem sortierten data frame `n.orte.order` verbunden, um die Häufigkeit jedes Ortes hinzuzufügen. Anschließend wird mit `ggplot` ein Balkendiagramm erstellt, das die Anzahl der Bahnhöfe in den Top 12 Städten anzeigt und die Bahnhofskategorien farblich unterscheidet. Es wird die gleiche Farbpalette wie in @fig-colored-station-map und @fig-bar-bundeslander verwendet.
+
 
 ```{r}
 #| code-fold: true
@@ -342,15 +343,16 @@ An @fig-top12 lassen sich folgende Erkenntnisse ableiten:
 Berlin hat im Vergleich zu den anderen Städten deutlich mehr Bahnhöfe. Dies könnte darauf hindeuten, dass das gesamte Gebiet als Adresse "Berlin" geführt wird, wodurch die Anzahl der Bahnhöfe in der Stadt scheinbar überdurchschnittlich hoch ist.
 
 Frankfurt und Stuttgart haben im Vergleich zu den anderen Städten verhältnismäßig mehr Bahnhöfe der Kategorie 3. 
-München, Berlin und Hamburg haben verhältnismäßig den höchten Anteil an Bahnhöfen der Kategorie 4, während Düsseldorf, Nürnberg und Dresden die höchsten Anteile an Bahnhöfen der Kategorie 5 besitzen.
+München, Berlin und Hamburg haben verhältnismäßig den höchsten Anteil an Bahnhöfen der Kategorie 4, während Düsseldorf, Nürnberg und Dresden die höchsten Anteile an Bahnhöfen der Kategorie 5 besitzen.
 Die in @fig-colored-station-map sichtbaren Schwerpunkte lassen sich daher bestätigen.
-Bezüglich der Fragestellung lässt sich aussagen, das die Kategorien der Bahnhöfe zwischen Städen ungleichmäßig verteilt sind. 
+Bezüglich der Fragestellung lässt sich aussagen, dass die Kategorien der Bahnhöfe zwischen Städten ungleichmäßig verteilt sind. 
 
 ### Vergleich auf Bundesländerebene
 
 In diesem Abschnitt werden die Bahnhofsdaten auf Bundesländerebene analysiert. Hierbei werden auch die Daten zur Einwohnerzahl in Betrachtung gezogen.
 
-Zunächst wird ein ähnliches Diagramm zu @fig-top12 erstellt mit dem unterschied, dass hier nach Bundesländern gruppiert wird. Somit ist die Datenmanipulation für diesen Teil auch sehr ähnlich.
+Zunächst wird ein ähnliches Diagramm zu @fig-top12 erstellt, mit dem Unterschied, dass hier nach Bundesländern gruppiert wird. Somit ist die Datenmanipulation für diesen Teil auch sehr ähnlich.
+
 
 ```{r}
 #| code-fold: true
@@ -396,17 +398,18 @@ Generell ist eine stärkere Tendenz in Richtung kleinere Bahnhöfe zu erkennen.
 Dies lässt sich erklären, da die Bahnhöfe nicht nur noch in städtischem Gebiet, sondern auch vermehrt in ländlichem Gebiet liegen. 
 Dies ist dadurch geschuldet, dass nun ein Länderdurchschnitt und kein Stadtdurchschnitt genommen wird. 
 Auch sieht man, dass die drei Stadtstaaten (Berlin, Hamburg und Bremen) im Vergleich zu den anderen Städten eine andere Verteilung der Bahnhöfe haben.
-Im Allgemeinen unterscheiden sich die Häufigkeiten von Bahnhöfskategorien auf Bundesebene kaum (vorallem im vergleich zu den Städten in @fig-top12). 
+Im Allgemeinen unterscheiden sich die Häufigkeiten von Bahnhofskategorien auf Bundesebene kaum (vor allem im Vergleich zu den Städten in @fig-top12). 
 
 #### Karten auf Bundesländerebene {#sec-map-bundeslander}
 
 In diesem Abschnitt werden nun weitere Bundesländerdaten (wie Einwohner und Fläche) zur Analyse hinzugefügt.
 
-Hierzu wird dem Dataframe `german_states` die Anzahl der Bahnhöfe in diesem Bundesland hinzugefügt. Darauf werden 3 Karten zur Befölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt. Diese werden nebeneinander angezeigt um die verschiedenen Daten gut vergleichen zu können.
+Hierzu wird dem Dataframe `german_states` die Anzahl der Bahnhöfe in diesem Bundesland hinzugefügt. Darauf werden 3 Karten zur Bevölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt. Diese werden nebeneinander angezeigt, um die verschiedenen Daten gut vergleichen zu können.
 
 ::: callout-note
 In diesen und allen folgenden Karten bis @fig-plz-tripple-plot wird eine logarithmische Scala verwendet, da die Unterschiede nicht erkennbar sind. Dies ist der Fall, da immer wieder einzelne Ausreißer wie Städte oder Stadtstaaten die Skala zu stark beeinflussen. Mit der logarithmischen Skala können somit auch Unterschiede in den restlichen Gebieten erkannt werden.
 :::
+
 
 ```{r}
 #| code-fold: true
@@ -466,19 +469,19 @@ $$
 1: \frac{n}{population} \hspace{1cm} 2: \frac{population}{area} \hspace{1cm}  3: \frac{n}{area}
 $$
 In der dritten Karte ist eine Trennlinie zwischen den alten und neuen Bundesländern zu erahnen.
-Die neuen Bundesländer scheinen im schnitt mehr Bahnhöfe pro Person zu haben als die alten.  
+Die neuen Bundesländer scheinen im Schnitt mehr Bahnhöfe pro Person zu haben als die alten.  
 
 <!-- So könnte man aus den ersten Karten geographische Zusammenhänge erahnen, welche durch die dritte Karte revidiert werden. Hierdurch wird die initiale Vermutung bestätigt, dass es Unterschiede zwischen Stadt und Land gibt aber es keine klaren Unterschiede im Bundesländervergleich gibt. Dies heißt trotzdem nicht, dass es keine Unterschiede gibt und alle Bundesländer gleich aufgestellt sind. -->
 
 ### Mehr Granularität durch Postleitzahlen
 
-Um den im Bundesländervergleich markanten Unterschied genauer zu analysieren wird nun die Granularität mithilfe von Postleitzahlen(PLZ) erhöht. Dies wird in zwei Schritten erledigt. 
+Um den im Bundesländervergleich markanten Unterschied genauer zu analysieren, wird nun die Granularität mithilfe von Postleitzahlen(PLZ) erhöht. Dies wird in zwei Schritten erledigt. 
 Zuerst werden Gebiete mithilfe der ersten beiden Ziffern in der Postleitzahl (Postleitregionen) gruppiert. Danach wird jede PLZ einzeln betrachtet.
 
 Zunächst müssen die Daten wieder angepasst werden. 
 Hierzu werden die Postleitzahlen nach den ersten beiden Ziffern gruppiert und die Summe aller Einwohner sowie aller Bahnhöfe in diesem Gebiet hinzugefügt. Dieser Prozess ist sehr rechenintensiv. 
 Darauf wird mit `st_area` die Fläche jedes Gebietes aus den Geometriedaten berechnet. 
-Zusätzlich werden hier outlier herrausgefiltert. In diesem Fall sind das PLZ welche unter 30 Einwohner haben.
+Zusätzlich werden hier outlier herausgefiltert. In diesem Fall sind das PLZ, welche unter 30 Einwohner haben.
 Diese PLZ beziehen sich auf Spezialfälle wie Flughäfen mit mehreren Bahnhöfen und kaum Einwohnern.
 Im Anschluss werden wieder drei Karten zur Bevölkerungsdichte, Bahnhofsdichte und Anzahl der Bahnhöfe pro Person erstellt.
 
@@ -536,7 +539,7 @@ Statt einem Ost-West Unterschied sind auf dritten Karte drei Regionen (Ost, Nord
 
 #### Aufteilung in einzelne Postleitzahlen {#sec-plz-map}
 
-Im letzen Schritt der Analyse mit Karten werden nun die Bereiche in die einzelnen Postleitzahlregionen unterteilt. Hier ergibt sich nun auch die Besonderheit, dass es für einige PLZ keinen Bahnhof gibt. Dennoch muss hier keine weitere Datenmanipulation erfolgen und es kann mit den verarbeiteten Daten aus den vorherigen Schritten gearbeitet werden.
+Im letzten Schritt der Analyse mit Karten werden nun die Bereiche in die einzelnen Postleitzahlregionen unterteilt. Hier ergibt sich jetzt auch die Besonderheit, dass es für einige PLZ keinen Bahnhof gibt. Dennoch muss hier keine weitere Datenmanipulation erfolgen und es kann mit den verarbeiteten Daten aus den vorherigen Schritten gearbeitet werden.
 
 ```{r}
 #| code-fold: true
@@ -573,17 +576,17 @@ plot_tripple_comparison(population_density.plz, station_density.plz, population_
 
 
 Mit dieser feien Granularität sieht man nun, dass die Bahnhofsdichte stark mit der Bevölkerungsdichte zusammenhängt. 
-Jedoch ist das Verhältniss Einwohner pro Bahnhof in Deutschland recht gleichmäßig verteilt. 
+Jedoch ist das Verhältnis Einwohner pro Bahnhof in Deutschland recht gleichmäßig verteilt. 
 Es gibt keinen großen Unterschied zwischen Land- und Stadtregionen. 
 Dies gilt zumindest an den Postleitzahlen, an welchen es mindestens einen Bahnhof gibt. Erstaunlicherweise hat die Karte der Bahnhofsdichte (und somit auch die Dritte) großflächige Lücken (graue Stellen) an welchen es gar keinen Bahnhof gibt. 
-Dennoch kann man feststellen das die Lücken im Osten des Landes deutlich kleiner sind und es somit in fast jeder Postleitzahl mindestens einen Bahnhof gibt. 
+Dennoch kann man feststellen, dass die Lücken im Osten des Landes deutlich kleiner sind und es somit in fast jeder Postleitzahl mindestens einen Bahnhof gibt. 
 Dies kann jedoch auch damit zusammenhängen, dass die PLZ-Regionen sehr unterschiedlich groß sind. Mehr dazu in @sec-grid .
 
-### Bahnhoskategorien nach Einwohner
+### Bahnhofskategorien nach Einwohner
 
-Um zu überprüfen, ob die Einwohneranzahl wie vermutet mit der Bahnhofsanzahl verwand ist, werden die Beiden größen miteinander verglichen.
+Um zu überprüfen, ob die Einwohneranzahl wie vermutet mit der Bahnhofsanzahl verwand ist, werden die beiden Größen miteinander verglichen.
 Da sich aufgrund der Wertbereichsunterschiede zwischen der Einwohner- und Bahnhofsanzahl die Punkte eines Punktdiagramms zu sehr häufen würden, wird sich für ein Box-Plot entschieden.
-Damit der Graph aufgrund der vielen Postleitzahlen mit "0"-Werten nicht verfälscht wird, muss wie in den bisherigen Graphiken eine logarithmische Skalierung gewählt werden.
+Damit der Graph aufgrund der vielen Postleitzahlen mit "0"-Werten nicht verfälscht wird, muss wie in den bisherigen Grafiken eine logarithmische Skalierung gewählt werden.
 
 
 ```{r}
@@ -603,13 +606,13 @@ ggplot(grouped_german_plz_weighted) +
   labs(fill = "")
 
 ```
-Erkennbar ist das wie erwartet höhere Einwohnerdichten mit höheren Bahnhofsdichten verwand sind.
-Die bei der Postleitzahlgraphik geäußerte Vermutung lässt sich daher bestätigen.
+Erkennbar ist, dass wie erwartet höhere Einwohnerdichten mit höheren Bahnhofsdichten verwand sind.
+Die bei der Postleitzahlgrafik geäußerte Vermutung lässt sich daher bestätigen.
 
 ### Versuch auf einem Grid {#sec-grid}
 
-In @fig-plz-tripple-plot ist in Ostdeutschland eine großere Flächenabdeckung der Postleitzahlen mit Bahnhöfen zu sehen als im Westen.
-Ob dies einer real gleichmäßigeren Flächenabdeckung zu Grunde liegt oder einfach an den größeren Postleitzahlflächen in Ostdeutschland liegt soll mit einer gleichmäßig granularer Karte geprüft werden.
+In @fig-plz-tripple-plot ist in Ostdeutschland eine größere Flächenabdeckung der Postleitzahlen mit Bahnhöfen zu sehen als im Westen.
+Ob dies einer real gleichmäßigeren Flächenabdeckung zugrunde liegt oder einfach an den größeren Postleitzahlflächen in Ostdeutschland liegt, soll mit einer gleichmäßig granularer Karte geprüft werden.
 Hierzu wird Deutschland in ein Gitter unterteilt und die Anzahl an Bahnhöfen je Fläche gezählt.
 
 ```{r}
@@ -640,12 +643,12 @@ ggplot(germany_df, aes(x, y, fill =z)) +
 
 Anders als erwartet ist die Flächenabdeckung von Bahnhöfen in Ostdeutschland nicht besser als die in Westdeutschland. 
 Im Bundesvergleich sind nahezu alle Länder ähnlich gut abgedeckt.
-Außnahmen bilden hier wie zuvor Populationszentren wie Frankfurt, Berlin oder München.
+Ausnahmen bilden hier wie zuvor Populationszentren wie Frankfurt, Berlin oder München.
 
 ### Fun Fact: Prozentsatz an Bahnhöfen mit "Bahnhof" in der Adresse
 
-Abseits der Fragestellung, ist bei der Analyse der Adressen aufgefallen, dass die aller meisten Straßennahnmen "Bahnhof" im Namen tragen (bspw. `Bahnhofstraße`, `Bahhofallee`).
-Um zu überprüfen ob sich diese Beobachtung im gesammten Datensatz wiederspiegelt wird folgendes getestet:
+Abseits der Fragestellung, ist bei der Analyse der Adressen aufgefallen, dass die allermeisten Straßennamen "Bahnhof" im Namen tragen (bspw. `Bahnhofstraße`, `Bahhofallee`).
+Um zu überprüfen, ob sich diese Beobachtung im gesamten Datensatz widerspiegelt, wird Folgendes getestet:
 
 ```{r}
 #| output: false
@@ -655,7 +658,7 @@ address.percentage <- bahnhof %>%
   count(.) / nrow(bahnhof)
 ```
 
-Und es stellt sich herraus, dass tatsächlich `r address.percentage`% aller Bahnhöfe "Bahnhof" in ihrer Adresse stehen haben!
+Und es stellt sich heraus, dass tatsächlich `r address.percentage`% aller Bahnhöfe "Bahnhof" in ihrer Adresse stehen haben!
 
 ## Fazit !TODO!
 
